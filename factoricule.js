@@ -825,14 +825,21 @@ window.addEventListener('DOMContentLoaded', (event) => {
             FLEX_engine = canvas.getBoundingClientRect();
             XS_engine = e.clientX - FLEX_engine.left;
             YS_engine = e.clientY - FLEX_engine.top;
-            TIP_engine.x = XS_engine
-            TIP_engine.y = YS_engine
+            console.log(canvas_context.getTransform())
+            TIP_engine.x = XS_engine/3- canvas_context.getTransform().e/3
+            TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
             // example usage: if(object.isPointInside(TIP_engine)){ take action }
-            window.addEventListener('pointermove', continued_stimuli);
+            for(let t = 0;t<grid.blocks.length;t++){
+                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                    candyman.structures.push(new Arm(grid.blocks[t]))
+                }
+            }
         });
+        window.addEventListener('pointermove', continued_stimuli);
+
         window.addEventListener('pointerup', e => {
-            window.removeEventListener("pointermove", continued_stimuli);
+            // window.removeEventListener("pointermove", continued_stimuli);
         })
         function continued_stimuli(e) {
             FLEX_engine = canvas.getBoundingClientRect();
@@ -936,6 +943,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         constructor(){
             this.body = new Circle(100,100, 4, "#FFFFFF")
             this.tile = grid.blocks[Math.round(grid.w*11.15)]
+            this.structures = []
         }
         draw(){
             this.body.x = this.tile.glob.x
@@ -981,6 +989,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.dispx = this.dispx-this.tile.glob.x
             this.dispy = this.dispy-this.tile.glob.y
             canvas_context.translate(this.dispx, this.dispy)
+            for(let t =0;t<this.structures.length;t++){
+                this.structures[t].draw()
+            }
         }
     }
 
@@ -1010,7 +1021,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
         }
         perlin(){
-            let jiggler = 100
+            let jiggler = 110
             for(let h = 0;h<jiggler;h++){
                 for(let t = 0;t<this.blocks.length;t++){
                     let index = Math.floor(Math.random()*this.blocks.length)
@@ -1025,23 +1036,23 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                         this.blocks[t].neighbors.push(index)
                                         this.blocks[index].neighbors.push(t)
                                     }
-                                    let split = 3
+                                    let split = 2.5
                                     this.blocks[index].hydrogen += this.blocks[t].hydrogen/split
                                     this.blocks[t].hydrogen -= this.blocks[t].hydrogen/split
-                                    if(this.blocks[t].hydrogen < 0){
+                                    if(this.blocks[t].hydrogen < 20){
                                         this.blocks[t].hydrogen = 20
                                     }
-                                    let slpat = 5.9
+                                    let slpat = 4.5
                                     this.blocks[index].nitrogen += this.blocks[t].nitrogen/slpat
                                     this.blocks[t].nitrogen -= this.blocks[t].nitrogen/slpat
-                                    if(this.blocks[t].nitrogen < 0){
-                                        this.blocks[t].nitrogen = 20
+                                    if(this.blocks[t].nitrogen < 20){
+                                        this.blocks[t].nitrogen = 19
                                     }
-                                    let splut = 4.4
-                                    this.blocks[index].carbon += this.blocks[t].carbon/slpat
-                                    this.blocks[t].carbon -= this.blocks[t].carbon/slpat
-                                    if(this.blocks[t].carbon < 0){
-                                        this.blocks[t].carbon = 20
+                                    let splut = 3.5
+                                    this.blocks[index].carbon += this.blocks[t].carbon/splut
+                                    this.blocks[t].carbon -= this.blocks[t].carbon/splut
+                                    if(this.blocks[t].carbon < 20){
+                                        this.blocks[t].carbon = 18
                                     }
                                 }
                             }else{
@@ -1077,8 +1088,197 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
+    class Arm{
+        constructor(tile){
+            this.grip = -10
+            this.timer = 0
+            this.time = 40
+            this.tile = tile
+            this.xdir = 0
+            this.ydir = -1
+            this.nodes = []
+            this.angle = 1
+            this.center = new Circle(this.tile.glob.x, this.tile.glob.y, 2, "#FFFFFF")
+            this.crotch = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            
+            this.lp = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.rp = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.lf = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.rf = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.g = new Circle(this.tile.glob.x, this.tile.glob.y, 2, "#FFFFFF")
+            this.nodes.push(this.center)
+            this.nodes.push(this.crotch)
+            this.nodes.push(this.lp)
+            this.nodes.push(this.rp)
+            this.nodes.push(this.lf)
+            this.nodes.push(this.rf)
+            this.length = 24
+            this.particle = new Circle(-10000,-10000, 1, "#FFFFFF")
+            this.particle.type = 0
+            this.links = []
+            let link = new LineOP(this.center, this.crotch, "#AAAAAA", .5)
+            this.links.push(link)
+            let link2 = new LineOP(this.crotch, this.lp, "#AAAAAA", .5)
+            this.links.push(link2)
+            let link3 = new LineOP(this.crotch, this.rp, "#AAAAAA", .5)
+            this.links.push(link3)
+            let link4 = new LineOP(this.rp, this.rf, "#AAAAAA", .5)
+            this.links.push(link4)
+            let link5 = new LineOP(this.lp, this.lf, "#AAAAAA", .5)
+            this.links.push(link5)
+            this.startangle = Math.random()*Math.PI*2
+            this.endangle = Math.random()*Math.PI*2
+        }
+        drop(){
+
+            for(let t = 0;t<grid.blocks.length;t++){
+                if(grid.blocks[t].glob.doesPerimeterTouch(this.g)){
+                    if(this.particle.type == 1){
+                        grid.blocks[t].hydrogen+= 50
+                        this.particle =new Circle(-10000,-10000, 1, "#FFFFFF00")
+                        this.particle.type = 0
+                    }
+                    if(this.particle.type == 2){
+                        grid.blocks[t].carbon+= 50
+                        this.particle =new Circle(-10000,-10000, 1, "#FFFFFF00")
+                        this.particle.type = 0
+                    }
+                    if(this.particle.type == 3){
+                        grid.blocks[t].nitrogen+= 50
+                        this.particle =new Circle(-10000,-10000, 1, "#FFFFFF00")
+                        this.particle.type = 0
+                    }
+                        break
+                        // break
+                }
+            }
+        }
+        grab(){
+            if(this.particle.type != 0){
+                return
+            }
+
+            this.g.x = (this.lf.x+this.rf.x)/2
+            this.g.y = (this.lf.y+this.rf.y)/2
+            for(let t = 0;t<grid.blocks.length;t++){
+                if(grid.blocks[t].glob.doesPerimeterTouch(this.g)){
+                    if(grid.blocks[t].dotwork > 0){
+                        this.grip = 16
+                        this.particle = grid.blocks[t].dots[grid.blocks[t].dotwork]
+                        this.particle.gripped = 1
+                        if(this.particle.type ==1){
+                            grid.blocks[t].hydrogen-=5
+                        }
+                        if(this.particle.type ==2){
+                            grid.blocks[t].carbon-=5
+                        }
+                        if(this.particle.type ==3){
+                            grid.blocks[t].nitrogen-=5
+                        }
+                    }
+                    break
+
+                }
+            }
+
+        }
+        draw(){
+            // if(this.center.isPointInside(TIP_engine)){
+                if(keysPressed['i']){
+                    this.startangle+=.051
+                    if(this.startangle>Math.PI*2){
+                        this.startangle=0
+                    }
+                }
+                if(keysPressed['k']){
+                    this.startangle-=.051
+                    if(this.startangle<0){
+                        this.startangle = Math.PI*2
+                    }
+                }
+                if(keysPressed['j']){
+                    this.endangle-=.051
+                    if(this.endangle<0){
+                        this.endangle = Math.PI*2
+                    }
+                }
+                if(keysPressed['l']){
+                    this.endangle+=.051
+                    if(this.endangle>Math.PI*2){
+                        this.endangle=0
+                    }
+                }
+            // }
+            this.crotch.x = this.center.x +( Math.cos(this.angle)*this.length)
+            this.crotch.y = this.center.y +( Math.sin(this.angle)*this.length)
+            if(this.grip == 0){
+            this.lp.x = this.center.x +( Math.cos(this.angle+.15)*this.length*1.13)
+            this.lp.y = this.center.y +( Math.sin(this.angle+.15)*this.length*1.13)
+            this.rp.x = this.center.x +( Math.cos(this.angle-.15)*this.length*1.13)
+            this.rp.y = this.center.y +( Math.sin(this.angle-.15)*this.length*1.13)
+                this.rf.x = this.center.x +( Math.cos(this.angle-.07)*this.length*1.27)
+                this.rf.y = this.center.y +( Math.sin(this.angle-.07)*this.length*1.27)
+                this.lf.x = this.center.x +( Math.cos(this.angle+.07)*this.length*1.27)
+                this.lf.y = this.center.y +( Math.sin(this.angle+.07)*this.length*1.27)
+                this.g.x = this.center.y +( Math.cos(this.angle)*this.length*1.26)
+                this.g.y = this.center.y +( Math.sin(this.angle)*this.length*1.26)
+                this.grip = 1
+            }else{
+
+            this.lp.x = this.center.x +( Math.cos(this.angle+.1+((this.grip-10)*-.007))*this.length*1.15)
+            this.lp.y = this.center.y +( Math.sin(this.angle+.1+((this.grip-10)*-.007))*this.length*1.15)
+            this.rp.x = this.center.x +( Math.cos(this.angle-.1-((this.grip-10)*-.007))*this.length*1.15)
+            this.rp.y = this.center.y +( Math.sin(this.angle-.1-((this.grip-10)*-.007))*this.length*1.15)
+                this.rf.x = this.center.x +( Math.cos(this.angle-.07-((this.grip-10)*-.01))*this.length*1.26)
+                this.rf.y = this.center.y +( Math.sin(this.angle-.07-((this.grip-10)*-.01))*this.length*1.26)
+                this.lf.x = this.center.x +( Math.cos(this.angle+.07+((this.grip-10)*-.01))*this.length*1.26)
+                this.lf.y = this.center.y +( Math.sin(this.angle+.07+((this.grip-10)*-.01))*this.length*1.26)
+                this.g.x = this.center.y +( Math.cos(this.angle)*this.length*1.26)
+                this.g.y = this.center.y +( Math.sin(this.angle)*this.length*1.26)
+            }
+
+            this.g.x = (this.lf.x+this.rf.x)/2
+            this.g.y = (this.lf.y+this.rf.y)/2
+            // this.grip%=17
+            this.angle += .05
+            this.angle%=6.283
+
+            this.particle.x = (this.lf.x+this.rf.x)/2
+            this.particle.y = (this.lf.y+this.rf.y)/2
+            if(this.particle.type != 0){
+                this.particle.draw()
+            }
+            if(this.angle > this.startangle && this.angle< this.startangle+.07){
+                this.drop()
+                this.grip = 0
+            }
+            if(this.angle > this.endangle && this.angle<this.endangle+.07){
+                this.grab()
+                this.grip+=.4
+                if(this.grip > 16){
+                    this.grip = 16
+                }
+                this.angle-=.0485
+            }
+            let point = new Point(this.center.x+(Math.cos(this.startangle)*5), this.center.y+(Math.sin(this.startangle)*5))
+            let point2 = new Point(this.center.x+(Math.cos(this.endangle)*5), this.center.y+(Math.sin(this.endangle)*5))
+
+            let link1 =new LineOP(this.center, point, "#00FF00", .5)
+            let link2 =new LineOP(this.center, point2, "#FF0000", .5)
+            for(let t = 0;t<this.links.length;t++){
+                this.links[t].draw()
+            }
+            for(let t = 0;t<this.nodes.length;t++){
+                this.nodes[t].draw()
+            }
+            link2.draw()
+            link1.draw()
+        }
+    }
+
     class Atom{
         constructor(x,y, h,w, color){
+            this.dotwork = []
             this.neighbors = []
             this.dots = []
             this.body = new Rectangle(x,y,w,h,color)
@@ -1121,9 +1321,21 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
         getAtoms(){
 
-            for(let t = 0;t<((this.carbon/255)+(this.hydrogen/255)+(this.nitrogen/255));t++){
+            for(let t = 0;t<15;t++){
                 let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                atom.type = 1
+                if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
+                    atom.type = 1
+                }
+                if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
+                    atom.type = 2
+                }
+                if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
+                    atom.type = 3
+                }
+
                 this.dots.push(atom)
+         
             }
         }
         draw(){
@@ -1134,51 +1346,65 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
         atomize(){
 
-            for(let t = 0;t<this.dots.length;t++){
-                let link = new LineOP(this.body, candyman.body)
-                if(link.sqrDis() < 50000){
-                    this.dots[t].draw()
-                    
-                if (this.dots[t].x + this.dots[t].radius > this.body.x+this.body.width) {
-                    if (this.dots[t].xmom > 0) {
-                        this.dots[t].xmom *= -1
+            for(let t = 0;t<this.dotwork;t++){
+                if(this.dots[t].gripped != 1){
+
+                    let link = new LineOP(this.body, candyman.body)
+                    if(link.sqrDis() < 66000){
+                        this.dots[t].draw()
+                        
+                    if (this.dots[t].x + this.dots[t].radius > this.body.x+this.body.width) {
+                        if (this.dots[t].xmom > 0) {
+                            this.dots[t].xmom *= -1
+                        }
                     }
-                }
-                if (this.dots[t].y + this.dots[t].radius > this.body.y+this.body.height) {
-                    if (this.dots[t].ymom > 0) {
-                        this.dots[t].ymom *= -1
+                    if (this.dots[t].y + this.dots[t].radius > this.body.y+this.body.height) {
+                        if (this.dots[t].ymom > 0) {
+                            this.dots[t].ymom *= -1
+                        }
                     }
-                }
-                if (this.dots[t].x - this.dots[t].radius < this.body.x) {
-                    if (this.dots[t].xmom < 0) {
-                        this.dots[t].xmom *= -1
+                    if (this.dots[t].x - this.dots[t].radius < this.body.x) {
+                        if (this.dots[t].xmom < 0) {
+                            this.dots[t].xmom *= -1
+                        }
                     }
-                }
-                if (this.dots[t].y - this.dots[t].radius < this.body.y) {
-                    if (this.dots[t].ymom < 0) {
-                        this.dots[t].ymom *= -1
+                    if (this.dots[t].y - this.dots[t].radius < this.body.y) {
+                        if (this.dots[t].ymom < 0) {
+                            this.dots[t].ymom *= -1
+                        }
                     }
+                
+                this.dots[t].x += this.dots[t].xmom
+                this.dots[t].y += this.dots[t].ymom
                 }
-            
-            this.dots[t].x += this.dots[t].xmom
-            this.dots[t].y += this.dots[t].ymom
             // this.dots[t].color =  `rgb(${Math.max(this.carbon*4, 100)}, ${Math.max(this.hydrogen*4,100)}, ${Math.max(this.nitrogen*4,100)})`
-            if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
-                this.dots[t].color= "#00FF00"
-            }
-            if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
-                this.dots[t].color = "#FF0000"
-            }
-            if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
-                this.dots[t].color = "#0000ff"
-            }
+                if(this.dots[t].gripped!=1){
+
+                    if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
+                        this.dots[t].color= "#00FF00"
+                    }
+                    if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
+                        this.dots[t].color = "#FF0000"
+                    }
+                    if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
+                        this.dots[t].color = "#0000ff"
+                    }
+                }
                 }
             }
-            for(let t = 0;t<this.dots.length;t++){
-                if(((this.carbon/255)+(this.hydrogen/255)+(this.nitrogen/255)) > this.dots.length*255){
-                    this.dots.splice(0,1)
+            // for(let t = 0;t<this.dots.length;t++){
+                if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) <= this.dotwork*40){
+                    // this.dots.splice(0,1)
+                    this.dotwork--
+                }else{
+                    if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) >= (this.dotwork+1)*40){
+
+                let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                    this.dotwork++
+                    this.dots.push(atom)
+                    }
                 }
-            }
+            // }
         }
     }
 
