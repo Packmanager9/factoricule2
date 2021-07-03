@@ -263,6 +263,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         constructor(x, y, radius, color, xmom = 0, ymom = 0, friction = 1, reflect = 0, strokeWidth = 0, strokeColor = "transparent") {
             this.x = x
             this.y = y
+            this.age = 0
             this.radius = radius
             this.color = color
             this.xmom = xmom
@@ -272,7 +273,23 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.strokeWidth = strokeWidth
             this.strokeColor = strokeColor
         }
+        copy(){
+            let copy = new Circle(0,0,0,0)
+            copy.type = this.type
+            copy.radius = this.radius
+            copy.y = this.y
+            copy.x = this.x
+            copy.xmom = this.xmom
+            copy.ymom = this.ymom
+            copy.color = this.color
+            copy.last = this.last
+            copy.age = 0
+            // copy.gripped = this.gripped
+            // copy.marked = this.marked
+            return copy
+        }
         draw() {
+
             canvas_context.lineWidth = this.strokeWidth
             canvas_context.strokeStyle = this.color
             canvas_context.beginPath();
@@ -830,11 +847,65 @@ window.addEventListener('DOMContentLoaded', (event) => {
             TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
             // example usage: if(object.isPointInside(TIP_engine)){ take action }
-            for(let t = 0;t<grid.blocks.length;t++){
-                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
-                    candyman.structures.push(new Arm(grid.blocks[t]))
+            if(keysPressed['n']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 1
+                        grid.blocks[t].ydir = 0
+                    }
                 }
             }
+            if(keysPressed['v']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = -1
+                        grid.blocks[t].ydir = 0
+                    }
+                }
+            }
+            if(keysPressed['g']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = -1
+                    }
+                }
+            }
+            if(keysPressed['b']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = 1
+                    }
+                }
+            }
+            if(keysPressed['r']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        candyman.structures.push(new Arm(grid.blocks[t]))
+                    }
+                }
+            }
+
+
+            // this.belt = 1
+            // if(Math.random()<.3){
+            //     this.xdir = 1
+            // }else if(Math.random()<.3){
+            //     this.xdir = -1
+            // }else{
+            //     this.xdir = 0
+            //     if(Math.random()<.3){
+            //         this.ydir = 1
+            //     }else if(Math.random()<.3){
+            //         this.ydir = -1
+            //     }else{
+            //         this.ydir = 0
+            //     }
         });
         window.addEventListener('pointermove', continued_stimuli);
 
@@ -1008,11 +1079,27 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     this.blocks.push(brick)
             }
 
-            for(let t = 0;t<100;t++){
+            for(let t = 0;t<110;t++){
             this.perlin()
             }
             this.giveAtoms()
             
+            for(let t = 0;t<this.blocks.length;t++){
+                for(let index = 0;index<this.blocks.length;index++){
+                    if(index!=t){
+
+                        if(this.blocks[t].glob.doesPerimeterTouch(this.blocks[index].glob)){
+                            if(!this.blocks[t].neighbors.includes(index)){
+                                if(!this.blocks[index].neighbors.includes(t)){
+                                this.blocks[t].neighbors.push(index)
+                                this.blocks[index].neighbors.push(t)
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
         }
         giveAtoms(){
             for(let t = 0;t<this.blocks.length;t++){
@@ -1046,13 +1133,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     this.blocks[index].nitrogen += this.blocks[t].nitrogen/slpat
                                     this.blocks[t].nitrogen -= this.blocks[t].nitrogen/slpat
                                     if(this.blocks[t].nitrogen < 20){
-                                        this.blocks[t].nitrogen = 19
+                                        this.blocks[t].nitrogen = 0
                                     }
                                     let splut = 3.5
                                     this.blocks[index].carbon += this.blocks[t].carbon/splut
                                     this.blocks[t].carbon -= this.blocks[t].carbon/splut
                                     if(this.blocks[t].carbon < 20){
-                                        this.blocks[t].carbon = 18
+                                        this.blocks[t].carbon = 0
                                     }
                                 }
                             }else{
@@ -1063,27 +1150,25 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
                 }
             }
-            for(let t = 0;t<this.blocks.length;t++){
-                for(let index = 0;index<0;index++){
-                    if(index!=t){
-
-                        if(this.blocks[t].glob.doesPerimeterTouch(this.blocks[index].glob)){
-                            if(!this.blocks[t].neighbors.includes(index)){
-                                this.blocks[t].neighbors.push(index)
-                                this.blocks[index].neighbors.push(t)
-                            }
-                        }
-                    }
-                }
-
-            }
         }
         draw(){
             for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].draw()
             }
             for(let t = 0;t<this.blocks.length;t++){
+                this.blocks[t].runBelt()
+            }
+            for(let t = 0;t<this.blocks.length;t++){
+                this.blocks[t].cleandots()
+            }
+            for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].atomize()
+            }
+            for(let t = 0;t<this.blocks.length;t++){
+                this.blocks[t].cleandots()
+            }
+            for(let t = 0;t<this.blocks.length;t++){
+                this.blocks[t].freeDots()
             }
         }
     }
@@ -1098,6 +1183,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.ydir = -1
             this.nodes = []
             this.angle = 1
+            this.subind = Math.floor(Math.random()*1280)
             this.center = new Circle(this.tile.glob.x, this.tile.glob.y, 2, "#FFFFFF")
             this.crotch = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
             
@@ -1132,23 +1218,38 @@ window.addEventListener('DOMContentLoaded', (event) => {
         drop(){
 
             for(let t = 0;t<grid.blocks.length;t++){
-                if(grid.blocks[t].glob.doesPerimeterTouch(this.g)){
+                if(grid.blocks[t].body.isPointInside(this.g)){
                     if(this.particle.type == 1){
                         grid.blocks[t].hydrogen+= 50
-                        this.particle =new Circle(-10000,-10000, 1, "#FFFFFF00")
+                        grid.blocks[t].dots.unshift(this.particle.copy())
+                        this.particle.marked = 1
                         this.particle.type = 0
                     }
                     if(this.particle.type == 2){
                         grid.blocks[t].carbon+= 50
-                        this.particle =new Circle(-10000,-10000, 1, "#FFFFFF00")
+                        grid.blocks[t].dots.unshift(this.particle.copy())
+                        this.particle.marked = 1
                         this.particle.type = 0
                     }
                     if(this.particle.type == 3){
                         grid.blocks[t].nitrogen+= 50
-                        this.particle =new Circle(-10000,-10000, 1, "#FFFFFF00")
+                        grid.blocks[t].dots.unshift(this.particle.copy())
+                        this.particle.marked = 1
                         this.particle.type = 0
                     }
-                        break
+
+                    if(this.particle.type ==1){
+                        grid.blocks[this.subind].hydrogen-=50
+                    }
+                    if(this.particle.type ==2){
+                        grid.blocks[this.subind].carbon-=50
+                    }
+                    if(this.particle.type ==3){
+                        grid.blocks[this.subind].nitrogen-=50
+                    }
+
+                    grid.blocks[this.subind].cleandots()
+                        continue
                         // break
                 }
             }
@@ -1161,20 +1262,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.g.x = (this.lf.x+this.rf.x)/2
             this.g.y = (this.lf.y+this.rf.y)/2
             for(let t = 0;t<grid.blocks.length;t++){
-                if(grid.blocks[t].glob.doesPerimeterTouch(this.g)){
-                    if(grid.blocks[t].dotwork > 0){
+                if(grid.blocks[t].body.isPointInside(this.g)){
+                    if(Math.min(grid.blocks[t].dotwork, grid.blocks[t].dots.length) > 0){
                         this.grip = 16
-                        this.particle = grid.blocks[t].dots[grid.blocks[t].dotwork]
+                        this.particle = grid.blocks[t].dots[0]
                         this.particle.gripped = 1
-                        if(this.particle.type ==1){
-                            grid.blocks[t].hydrogen-=5
-                        }
-                        if(this.particle.type ==2){
-                            grid.blocks[t].carbon-=5
-                        }
-                        if(this.particle.type ==3){
-                            grid.blocks[t].nitrogen-=5
-                        }
+                        // this.particle.type = 1
+                    
+                        this.subind = t
                     }
                     break
 
@@ -1278,13 +1373,17 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     class Atom{
         constructor(x,y, h,w, color){
-            this.dotwork = []
+            this.dotwork = 0
+            this.dotworkx = 0
             this.neighbors = []
             this.dots = []
             this.body = new Rectangle(x,y,w,h,color)
             this.glob = new Circle(x+w*.5,y+w*.5,w*.5,getRandomColor())
             this.mglob = new Circle(x+w*.5,y+w*.5,w*.05,getRandomColor())
             this.type = 0
+            this.belt = 0
+            this.xdir = 0
+            this.ydir = 0
             for(let t = 0; t<16;t++){
                 if(Math.random()>.5){
                     this.type += 1
@@ -1319,6 +1418,77 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
 
         }
+        runBelt(){
+            let point = new Point(this.glob.x + this.xdir*2, this.glob.y + this.ydir*2)
+            let link = new LineOP(this.glob, point, "#FFFF00AA", 1)
+            if(this.belt == 1){
+                for(let t = 0;t<Math.min(this.dotwork, this.dots.length);t++){
+                    if(this.body.isPointInside(this.dots[t])){
+                    this.dots[t].x+=.11*this.xdir
+                    this.dots[t].y+=.11*this.ydir
+                    this.dots[t].gripped = 1
+                    this.dots[t].last = grid.blocks.indexOf(this)
+                    }
+                    if(!this.body.isPointInside(this.dots[t])){
+                        this.dots[t].x+=.01*this.xdir
+                        this.dots[t].y+=.01*this.ydir
+                        for(let k = 0;k<this.neighbors.length;k++){
+                            if(this.neighbors[k] == this.dots[t].last){
+                                continue
+                            }
+                            if(grid.blocks[this.neighbors[k]].body.isPointInside(this.dots[t])){
+                                if(this.dots[t].type == 1){                                    
+                                    console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
+
+                                    this.hydrogen-=50
+                                    grid.blocks[this.neighbors[k]].hydrogen += 50
+                                    grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
+                                    console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
+
+                                    for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
+                                        grid.blocks[this.neighbors[k]].dots[r].type =1
+                                    }
+                                this.dots[t].marked = 1
+                                }
+                                if(this.dots[t].type == 2){
+                                    this.carbon-=50
+                                    grid.blocks[this.neighbors[k]].carbon += 50
+                                    grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
+                                    for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
+                                        grid.blocks[this.neighbors[k]].dots[r].type =2
+                                    }
+                                    this.dots[t].marked = 1
+                                    // t--
+                                }
+                                if(this.dots[t].type == 3){
+                                    this.nitrogen-=50
+                                    grid.blocks[this.neighbors[k]].nitrogen += 50
+                                    grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
+                                    // t--
+                                    for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
+                                        grid.blocks[this.neighbors[k]].dots[r].type =3
+                                    }
+                                    this.dots[t].marked = 1
+
+                                }
+                                break
+                            }
+                        }
+                    }else{
+                    }
+                }
+            }
+            link.draw()
+            this.cleandots()
+        }
+        cleandots(){
+            for(let t =0;t<this.dots.length;t++){
+                if(this.dots[t].marked == 1){
+                    this.dots.splice(t,1)
+                    t--
+                }
+            }
+        }
         getAtoms(){
 
             for(let t = 0;t<15;t++){
@@ -1339,19 +1509,50 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
         }
         draw(){
+            this.cleandots()
             this.body.color = `rgb(${this.carbon/4}, ${this.hydrogen/4}, ${this.nitrogen/4})`
             this.body.draw()
 
+            if(this.hydrogen<50){
+                this.hydrogen=0
+            }
+            if(this.carbon<50){
+                this.carbon=0
+            }
+            if(this.nitrogen<50){
+                this.nitrogen=0
+            }
             // this.glob.draw()
+        }
+        freeDots(){
+            if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) < (this.dotwork)*50){
+                // this.dots.splice(0,1)
+                this.dotwork--
+                this.dotworkx = this.dotwork
+            }else{
+                if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) >= (this.dotworkx+1)*50){
+
+                    // console.log((this.carbon)+(this.hydrogen)+(this.nitrogen) , (this.dotwork)*50)
+                this.dotwork++
+                while(this.dotwork > this.dots.length){
+                    let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                    this.dots.push(atom)
+                }
+                }
+            }
         }
         atomize(){
 
-            for(let t = 0;t<this.dotwork;t++){
-                if(this.dots[t].gripped != 1){
+            for(let t = 0;t<Math.min(this.dotwork, this.dots.length);t++){
+                if(this.dots[t].gripped != 1 || this.belt == 1){
 
                     let link = new LineOP(this.body, candyman.body)
                     if(link.sqrDis() < 66000){
-                        this.dots[t].draw()
+                        if(this.dots[t].age > 1){
+                            this.dots[t].draw()
+                        }else{
+                            this.dots[t].age++
+                        }
                         
                     if (this.dots[t].x + this.dots[t].radius > this.body.x+this.body.width) {
                         if (this.dots[t].xmom > 0) {
@@ -1374,11 +1575,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         }
                     }
                 
-                this.dots[t].x += this.dots[t].xmom
-                this.dots[t].y += this.dots[t].ymom
+                    if(this.belt == 1){
+                        this.dots[t].x += this.dots[t].xmom*.05
+                        this.dots[t].y += this.dots[t].ymom*.05
+                    }else{
+                        this.dots[t].x += this.dots[t].xmom
+                        this.dots[t].y += this.dots[t].ymom
+                    }
                 }
             // this.dots[t].color =  `rgb(${Math.max(this.carbon*4, 100)}, ${Math.max(this.hydrogen*4,100)}, ${Math.max(this.nitrogen*4,100)})`
-                if(this.dots[t].gripped!=1){
+                if(this.dots[t].gripped!=1 || this.belt == 1){
 
                     if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
                         this.dots[t].color= "#00FF00"
@@ -1390,20 +1596,19 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.dots[t].color = "#0000ff"
                     }
                 }
+                }else if(this.belt == 1){
+                    let link = new LineOP(this.body, candyman.body)
+                    if(link.sqrDis() < 66000){
+                        if(this.dots[t].age > 1){
+                            this.dots[t].draw()
+                        }else{
+                            this.dots[t].age++
+                        }
+                    }
                 }
             }
             // for(let t = 0;t<this.dots.length;t++){
-                if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) <= this.dotwork*40){
-                    // this.dots.splice(0,1)
-                    this.dotwork--
-                }else{
-                    if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) >= (this.dotwork+1)*40){
-
-                let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
-                    this.dotwork++
-                    this.dots.push(atom)
-                    }
-                }
+           
             // }
         }
     }
