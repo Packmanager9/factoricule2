@@ -436,6 +436,185 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
             return false
         }
+    }
+    class Circles {
+        constructor(x, y, radius, color, xmom = 0, ymom = 0, friction = 1, reflect = 0, strokeWidth = 0, strokeColor = "transparent") {
+            this.x = x
+            this.y = y
+            this.age = 0
+            this.radius = radius
+            this.color = color
+            this.xmom = xmom
+            this.ymom = ymom
+            this.friction = friction
+            this.reflect = reflect
+            this.strokeWidth = strokeWidth
+            this.strokeColor = strokeColor
+            this.type =1
+        }
+        copy(){
+            let copy = new Circle(0,0,0,0)
+            copy.type = this.type
+            copy.radius = this.radius
+            copy.y = this.y
+            copy.x = this.x
+            copy.xmom = this.xmom
+            copy.ymom = this.ymom
+            copy.color = this.color
+            copy.last = this.last
+            copy.age = 0
+            // copy.gripped = this.gripped
+            // copy.marked = this.marked
+            return copy
+        }
+        draw() {
+
+            canvas_context.lineWidth = this.strokeWidth
+            if(this.type == 1){
+                this.color = "#00FF00"
+            }
+            if(this.type == 2){
+                this.color = "#FF0000"
+            }
+            if(this.type == 3){
+                this.color = "#0000FF"
+            }
+            canvas_context.strokeStyle = this.color
+            canvas_context.stokeWidth = 1
+            canvas_context.beginPath();
+            if (this.radius > 0) {
+                canvas_context.arc(this.x, this.y, this.radius, 0, (Math.PI * 2), true)
+                canvas_context.fillStyle = this.color
+                // canvas_context.fill()
+                canvas_context.stroke();
+            } else {
+                // console.log("The circle is below a radius of 0, and has not been drawn. The circle is:", this)
+            }
+        }
+        move() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.x += this.xmom
+            this.y += this.ymom
+        }
+        unmove() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.x -= this.xmom
+            this.y -= this.ymom
+        }
+        frictiveMove() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.x += this.xmom
+            this.y += this.ymom
+            this.xmom *= this.friction
+            this.ymom *= this.friction
+        }
+        frictiveunMove() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.xmom /= this.friction
+            this.ymom /= this.friction
+            this.x -= this.xmom
+            this.y -= this.ymom
+        }
+        isPointInside(point) {
+            this.areaY = point.y - this.y
+            this.areaX = point.x - this.x
+            if (((this.areaX * this.areaX) + (this.areaY * this.areaY)) <= (this.radius * this.radius)) {
+                return true
+            }
+            return false
+        }
+        doesPerimeterTouch(point) {
+            this.areaY = point.y - this.y
+            this.areaX = point.x - this.x
+            if (((this.areaX * this.areaX) + (this.areaY * this.areaY)) <= ((this.radius + point.radius) * (this.radius + point.radius))) {
+                return true
+            }
+            return false
+        }
     } class Polygon {
         constructor(x, y, size, color, sides = 3, xmom = 0, ymom = 0, angle = 0, reflect = 0) {
             if (sides < 2) {
@@ -513,7 +692,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 canvas_context.lineTo(this.nodes[t].x, this.nodes[t].y)
             }
             canvas_context.lineTo(this.nodes[0].x, this.nodes[0].y)
-            canvas_context.fill()
+            // canvas_context.fill()
             canvas_context.stroke()
             canvas_context.closePath()
         }
@@ -857,6 +1036,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
             TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
             // example usage: if(object.isPointInside(TIP_engine)){ take action }
+            if(keysPressed['q']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        candyman.structures.push(new Assembler(grid.blocks[t]))
+                        candyman.selectedindex++
+                    }
+                }
+            }
             if(keysPressed['n']){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
@@ -1177,6 +1364,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 this.blocks[t].atomize()
             }
             for(let t = 0;t<this.blocks.length;t++){
+                this.blocks[t].molecularize()
+            }
+            for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].cleandots()
             }
             for(let t = 0;t<this.blocks.length;t++){
@@ -1185,6 +1375,31 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
+    class Assembler {
+        constructor(tile){
+            this.tile = tile 
+            this.body =  new Circles(this.tile.glob.x, this.tile.glob.y, this.tile.body.width*.5, "#FFFF00")
+            this.body.type = 4
+            this.tile.assembler = 1
+        }
+        draw(){
+            this.body.draw()
+            this.make()
+        }
+        make(){
+            // for(let t = 0;t<this.tile.dots.length;t++){
+                if(this.tile.hydrogen > 200){
+                    if(this.tile.carbon > 100){
+                        this.tile.carbon-=100
+                        this.tile.hydrogen-=200
+                        let acetyl = new Circle(this.tile.glob.x,this.tile.glob.y, 1.5, "#FFFF00", Math.random()-.5,Math.random()-.5)
+                        acetyl.type = 4
+                        this.tile.mols.push(acetyl)
+                    }
+                }
+            // }
+        }
+    }
     class Arm{
         constructor(tile){
             this.grip = -10
@@ -1231,6 +1446,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
             for(let t = 0;t<grid.blocks.length;t++){
                 if(grid.blocks[t].body.isPointInside(this.g)){
+                    if(this.particle.type == 4){
+                        // grid.blocks[t].hydrogen+= 50
+                        grid.blocks[t].mols.unshift(this.particle.copy())
+                    }
                     if(this.particle.type == 1){
                         grid.blocks[t].hydrogen+= 50
                         grid.blocks[t].dots.unshift(this.particle.copy())
@@ -1259,6 +1478,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     if(this.particle.type ==3){
                         grid.blocks[this.subind].nitrogen-=50
                     } 
+                    if(this.particle.type ==4){
+                        grid.blocks[this.subind].mols.splice(0,1)
+                    } 
                     this.particle.marked = 1
                     // this.particle.type = 0
                     this.particle = new Circle(0,0,0,"transparent")
@@ -1279,13 +1501,24 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.g.y = (this.lf.y+this.rf.y)/2
             for(let t = 0;t<grid.blocks.length;t++){
                 if(grid.blocks[t].body.isPointInside(this.g)){
-                    if(Math.min(grid.blocks[t].dotwork, grid.blocks[t].dots.length) > 0){
-                        this.grip = 16
-                        this.particle = grid.blocks[t].dots[grid.blocks[t].dotwork-1]
-                        this.particle.gripped = 1
-                        // this.particle.type = 1
-                    
-                        this.subind = t
+                    if(grid.blocks[t].assembler == 1){
+
+                        if(grid.blocks[t].mols.length > 0){
+                            this.grip = 16
+                            this.particle = grid.blocks[t].mols[0]
+                            this.particle.gripped = 1
+                            // this.particle.type = 1
+                            this.subind = t
+                        }
+                    }else{
+                        if(Math.min(grid.blocks[t].dotwork, grid.blocks[t].dots.length) > 0){
+                            this.grip = 16
+                            this.particle = grid.blocks[t].dots[grid.blocks[t].dotwork-1]
+                            this.particle.gripped = 1
+                            // this.particle.type = 1
+                        
+                            this.subind = t
+                        }
                     }
                     break
 
@@ -1397,6 +1630,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.dotworkx = 0
             this.neighbors = []
             this.dots = []
+            this.mols = []
             this.body = new Rectangle(x,y,w,h,color)
             this.glob = new Circle(x+w*.5,y+w*.5,w*.5,getRandomColor())
             this.mglob = new Circle(x+w*.5,y+w*.5,w*.05,getRandomColor())
@@ -1498,6 +1732,66 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }else{
                     }
                 }
+                for(let t = 0;t<this.mols.length;t++){
+                    if(this.body.isPointInside(this.mols[t])){
+                    this.mols[t].x+=.11*this.xdir
+                    this.mols[t].y+=.11*this.ydir
+                    this.mols[t].gripped = 1
+                    this.mols[t].last = grid.blocks.indexOf(this)
+                    }
+                    if(!this.body.isPointInside(this.mols[t])){
+                        this.mols[t].x+=.01*this.xdir
+                        this.mols[t].y+=.01*this.ydir
+                        for(let k = 0;k<this.neighbors.length;k++){
+                            if(this.neighbors[k] == this.mols[t].last){
+                                continue
+                            }
+                            if(grid.blocks[this.neighbors[k]].body.isPointInside(this.mols[t])){
+
+                                if(this.mols[t].type == 4){
+                                    grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
+                                    this.mols[t].marked = 1
+                                }
+                                if(this.mols[t].type == 1){                                    
+                                    // console.log(grid.blocks[this.neighbors[k]].mols, grid.blocks[this.neighbors[k]].mols.length)
+
+                                    this.hydrogen-=50
+                                    grid.blocks[this.neighbors[k]].hydrogen += 50
+                                    grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
+                                    // console.log(grid.blocks[this.neighbors[k]].mols, grid.blocks[this.neighbors[k]].mols.length)
+
+                                    // for(let r = 0;r<grid.blocks[this.neighbors[k]].mols.length;r++){
+                                    //     grid.blocks[this.neighbors[k]].mols[r].type =1
+                                    // }
+                                this.mols[t].marked = 1
+                                }
+                                if(this.mols[t].type == 2){
+                                    this.carbon-=50
+                                    grid.blocks[this.neighbors[k]].carbon += 50
+                                    grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
+                                    // for(let r = 0;r<grid.blocks[this.neighbors[k]].mols.length;r++){
+                                    //     grid.blocks[this.neighbors[k]].mols[r].type =2
+                                    // }
+                                    this.mols[t].marked = 1
+                                    // t--
+                                }
+                                if(this.mols[t].type == 3){
+                                    this.nitrogen-=50
+                                    grid.blocks[this.neighbors[k]].nitrogen += 50
+                                    grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
+                                    // t--
+                                    // for(let r = 0;r<grid.blocks[this.neighbors[k]].mols.length;r++){
+                                    //     grid.blocks[this.neighbors[k]].mols[r].type =3
+                                    // }
+                                    this.mols[t].marked = 1
+
+                                }
+                                break
+                            }
+                        }
+                    }else{
+                    }
+                }
             }
             link.draw()
             this.cleandots()
@@ -1507,7 +1801,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 if(this.dots[t].marked == 1){
                     this.dots.splice(t,1)
                     // t--
-                    console.log("dawhkdj")
+                }
+            }
+            for(let t =0;t<this.mols.length;t++){
+                if(this.mols[t].marked == 1){
+                    this.mols.splice(t,1)
+                    // t--
                 }
             }
         }
@@ -1645,6 +1944,73 @@ window.addEventListener('DOMContentLoaded', (event) => {
             // for(let t = 0;t<this.dots.length;t++){
            
             // }
+        }
+        molecularize(){
+
+            for(let t = 0;t<this.mols.length;t++){
+                if(this.mols[t].type == 1){
+
+                    this.mols[t].color= "#00FF00"
+                }
+                    if(this.mols[t].type == 2){
+                    this.mols[t].color = "#FF0000"
+                }
+                    if(this.mols[t].type == 3){
+                    this.mols[t].color = "#0000ff"
+                }
+                if(this.mols[t].gripped != 1 || this.belt == 1){
+
+                    let link = new LineOP(this.body, candyman.body)
+                    if(link.sqrDis() < 66000){
+                        if(this.mols[t].age >0){
+                            this.mols[t].draw()
+                        }else{
+                            this.mols[t].age++
+                        }
+                        
+                    if (this.mols[t].x + this.mols[t].radius > this.body.x+this.body.width) {
+                        if (this.mols[t].xmom > 0) {
+                            this.mols[t].xmom *= -1
+                        }
+                    }
+                    if (this.mols[t].y + this.mols[t].radius > this.body.y+this.body.height) {
+                        if (this.mols[t].ymom > 0) {
+                            this.mols[t].ymom *= -1
+                        }
+                    }
+                    if (this.mols[t].x - this.mols[t].radius < this.body.x) {
+                        if (this.mols[t].xmom < 0) {
+                            this.mols[t].xmom *= -1
+                        }
+                    }
+                    if (this.mols[t].y - this.mols[t].radius < this.body.y) {
+                        if (this.mols[t].ymom < 0) {
+                            this.mols[t].ymom *= -1
+                        }
+                    }
+                
+                    if(this.belt == 1){
+                        this.mols[t].x += this.mols[t].xmom*.05
+                        this.mols[t].y += this.mols[t].ymom*.05
+                    }else{
+                        this.mols[t].x += this.mols[t].xmom
+                        this.mols[t].y += this.mols[t].ymom
+                    }
+                }
+                        if(this.mols[t].type == 4){
+                        this.mols[t].color= "#FFFF00"
+                    }
+                }else if(this.belt == 1){
+                    let link = new LineOP(this.body, candyman.body)
+                    if(link.sqrDis() < 66000){
+                        if(this.mols[t].age > 0){
+                            this.mols[t].draw()
+                        }else{
+                            this.mols[t].age++
+                        }
+                    }
+                }
+            }
         }
     }
 
