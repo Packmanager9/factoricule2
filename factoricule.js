@@ -494,6 +494,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.type == 11){
                 this.color = "#FFAA00"
             }
+            if(this.type == 12){
+                this.color = "#AAFF00"
+            }
+            if(this.type == 21){
+                this.color = getRandomLightColor()
+            }
+            if(this.type == 28){
+                this.color = "#777777"
+            }
             canvas_context.strokeStyle = this.color
             canvas_context.stokeWidth = 1
             canvas_context.beginPath();
@@ -1085,6 +1094,17 @@ window.addEventListener('DOMContentLoaded', (event) => {
                            candyman.structures.push(glucbase)
                            candyman.selectedindex++
                         }
+                        if(keysPressed['e']){
+                           let glucbase = new Compssembler(grid.blocks[t])
+                           glucbase.body.type = 12
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
+                        if(keysPressed['f']){
+                           let glucbase = new Cup(grid.blocks[t])
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
                     }
                 }
             }
@@ -1254,12 +1274,27 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     class Player {
         constructor(){
+            this.booze  = 0
+            this.sweet  = 0
+            this.sour  = 0
+            this.water  = 0
+            this.fizz  = 0
             this.body = new Circle(100,100, 4, "#FFFFFF")
-            this.tile = grid.blocks[Math.round(grid.w*11.15)]
+            this.body.type = 28
+            this.tile = grid.blocks[Math.round(grid.w*11.16)]
             this.structures = []
             this.selectedindex = -1
         }
         draw(){
+
+            canvas_context.fillStyle = "#FFFFFF"
+            canvas_context.font = "5px arial"
+            if(this.booze < 100 || this.sweet < 40 || this.sour <25 || this.water<100 || this.fizz<50){
+                canvas_context.fillText(`Alcohol: ${this.booze}/100, Glucose: ${this.sweet}/40, Citric Acid: ${this.sour}/25, Water: ${this.water}/100, Carbon Dioxide: ${this.fizz}/50`, this.body.x-200, this.body.y-110)
+            }else{
+            canvas_context.fillText(`Congratulations, free drinks! Thank you for playing!`, this.body.x-200, this.body.y-110)
+            }
+       
             this.body.x = this.tile.glob.x
             this.body.y = this.tile.glob.y
 
@@ -1343,7 +1378,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
 
             }
-        }
+         }
         giveAtoms(){
             for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].getAtoms()
@@ -1522,7 +1557,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     let co2ind = []
                     let etyind = []
                     for(let t = 0;t<this.tile.mols.length;t++){
-                        if(this.tile.mols[t].type == 6 && etysum<3){
+                        if(this.tile.mols[t].type == 6 && etysum<2){
                             etysum++
                             etyind.push(t)
                         }
@@ -1545,7 +1580,79 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         }
                     }
                 }
+                if(this.body.type == 12){
+                    let co2sum = 0
+                    let etysum = 0
+                    let co2ind = []
+                    let etyind = []
+                    for(let t = 0;t<this.tile.mols.length;t++){
+                        if(this.tile.mols[t].type == 4 && etysum<1){
+                            etysum++
+                            etyind.push(t)
+                        }
+                        if(this.tile.mols[t].type == 6 && co2sum<1){
+                            co2sum++
+                            co2ind.push(t)
+                        }
+                    }
+                    if(etysum >= 1){
+                        if(co2sum >= 1){
+
+                    for(let t = 0;t<this.tile.mols.length;t++){
+                        if(co2ind.includes(t)||etyind.includes(t)){
+                            this.tile.mols[t].marked=1
+                        }
+                    }
+                            let citricacid = new Circle(this.tile.glob.x,this.tile.glob.y, 1.7, "#AAFF00", Math.random()-.5,Math.random()-.5)
+                            citricacid.type = 12
+                            this.tile.compmols.push(citricacid)
+                        }
+                    }
+                }
         }
+    }
+    class Cup {
+        constructor(tile){
+            this.tile = tile 
+            this.body =  new Circles(this.tile.glob.x, this.tile.glob.y, this.tile.body.width*.5, "#FFFF00")
+            this.body.type = 21
+            this.tile.compssembler = 1
+        }
+        draw(){
+            this.body.draw()
+            this.make()
+        }
+        make(){
+           let booze  = 0
+           let sweet  = 0
+            let sour  = 0
+            let water  = 0
+            let fizz  = 0
+            for(let t = 0;t<this.tile.mols.length;t++){
+             if(this.tile.mols[t].type == 6){
+                 water++
+             }
+             if(this.tile.mols[t].type == 5){
+                 fizz++
+             }
+            }
+            for(let t = 0;t<this.tile.compmols.length;t++){
+             if(this.tile.compmols[t].type == 10){
+                 sweet++
+             }
+             if(this.tile.compmols[t].type == 11){
+                 sour++
+             }
+             if(this.tile.compmols[t].type == 12){
+                 booze++
+             }
+            }
+            candyman.fizz =fizz
+            candyman.booze =booze
+            candyman.sour =sour
+            candyman.sweet =sweet
+            candyman.water =water
+         }
     }
     class Arm{
         constructor(tile){
@@ -1606,6 +1713,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         grid.blocks[t].compmols.unshift(this.particle.copy())
                     }
                     if(this.particle.type == 11){
+                        grid.blocks[t].compmols.unshift(this.particle.copy())
+                    }
+                    if(this.particle.type == 12){
                         grid.blocks[t].compmols.unshift(this.particle.copy())
                     }
                     if(this.particle.type == 1){
@@ -1997,6 +2107,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     this.compmols[t].marked = 1
                                 }
                                 if(this.compmols[t].type == 11){
+                                    grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
+                                    this.compmols[t].marked = 1
+                                }
+                                if(this.compmols[t].type == 12){
                                     grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
                                     this.compmols[t].marked = 1
                                 }
