@@ -479,6 +479,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.type == 3){
                 this.color = "#0000FF"
             }
+            if(this.type == 4){
+                this.color = "#FFFF00"
+            }
+            if(this.type == 5){
+                this.color = "#FF00FF"
+            }
             canvas_context.strokeStyle = this.color
             canvas_context.stokeWidth = 1
             canvas_context.beginPath();
@@ -1039,8 +1045,19 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(keysPressed['q']){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
-                        candyman.structures.push(new Assembler(grid.blocks[t]))
-                        candyman.selectedindex++
+
+                        if(keysPressed['y']){
+                            let etylbase = new Assembler(grid.blocks[t])
+                            etylbase.body.type = 4
+                            candyman.structures.push(etylbase)
+                            candyman.selectedindex++
+                        }
+                         if(keysPressed['o']){
+                            let co2base = new Assembler(grid.blocks[t])
+                            co2base.body.type = 5
+                            candyman.structures.push(co2base)
+                            candyman.selectedindex++
+                         }
                     }
                 }
             }
@@ -1258,10 +1275,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.body.y = this.tile.glob.y
             this.dispx = this.dispx-this.tile.glob.x
             this.dispy = this.dispy-this.tile.glob.y
-            canvas_context.translate(this.dispx, this.dispy)
             for(let t =0;t<this.structures.length;t++){
                 this.structures[t].draw()
             }
+            canvas_context.translate(this.dispx, this.dispy)
         }
     }
 
@@ -1379,7 +1396,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         constructor(tile){
             this.tile = tile 
             this.body =  new Circles(this.tile.glob.x, this.tile.glob.y, this.tile.body.width*.5, "#FFFF00")
-            this.body.type = 4
+            // this.body.type = 4
             this.tile.assembler = 1
         }
         draw(){
@@ -1388,14 +1405,28 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
         make(){
             // for(let t = 0;t<this.tile.dots.length;t++){
-                if(this.tile.hydrogen > 200){
-                    if(this.tile.carbon > 100){
-                        this.tile.carbon-=100
-                        this.tile.hydrogen-=200
-                        let acetyl = new Circle(this.tile.glob.x,this.tile.glob.y, 1.5, "#FFFF00", Math.random()-.5,Math.random()-.5)
-                        acetyl.type = 4
-                        this.tile.mols.push(acetyl)
+                if(this.body.type == 4){
+                    if(this.tile.hydrogen >= 200){
+                        if(this.tile.carbon >= 100){
+                            this.tile.carbon-=100
+                            this.tile.hydrogen-=200
+                            let acetyl = new Circle(this.tile.glob.x,this.tile.glob.y, 1.5, "#FFFF00", Math.random()-.5,Math.random()-.5)
+                            acetyl.type = 4
+                            this.tile.mols.push(acetyl)
+                        }
                     }
+                }
+                if(this.body.type == 5){
+                    if(this.tile.nitrogen >= 100){
+                        if(this.tile.carbon >= 50){
+                            this.tile.nitrogen-=100
+                            this.tile.carbon-=50
+                            let co2 = new Circle(this.tile.glob.x,this.tile.glob.y, 1.3, "#FF00FF", Math.random()-.5,Math.random()-.5)
+                            co2.type = 5
+                            this.tile.mols.push(co2)
+                        }
+                    }
+                    // console.log(this.tile)
                 }
             // }
         }
@@ -1447,6 +1478,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             for(let t = 0;t<grid.blocks.length;t++){
                 if(grid.blocks[t].body.isPointInside(this.g)){
                     if(this.particle.type == 4){
+                        // grid.blocks[t].hydrogen+= 50
+                        grid.blocks[t].mols.unshift(this.particle.copy())
+                    }
+                    if(this.particle.type == 5){
                         // grid.blocks[t].hydrogen+= 50
                         grid.blocks[t].mols.unshift(this.particle.copy())
                     }
@@ -1513,7 +1548,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }else{
                         if(Math.min(grid.blocks[t].dotwork, grid.blocks[t].dots.length) > 0){
                             this.grip = 16
-                            this.particle = grid.blocks[t].dots[grid.blocks[t].dotwork-1]
+                            this.particle = grid.blocks[t].dots[0]
                             this.particle.gripped = 1
                             // this.particle.type = 1
                         
@@ -1649,6 +1684,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.type == 13){
                 this.kind = 1
                 this.hydrogen = (Math.random()*1000)+450
+                this.spigot =1
             }else{
                 this.hydrogen = 0
             }
@@ -1657,6 +1693,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     this.kind = 1
                     this.nitrogen = (Math.random()*500)+450
                     this.hydrogen = 0
+                    this.spigot =2
                 }else{
                 this.nitrogen = 0
 
@@ -1667,6 +1704,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.type == 14){
                 this.kind = 1
                 this.carbon = (Math.random()*200)+450
+                this.spigot =3
             }else{
                 this.carbon = 0
             }
@@ -1749,6 +1787,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.mols[t])){
 
                                 if(this.mols[t].type == 4){
+                                    grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
+                                    this.mols[t].marked = 1
+                                }
+                                if(this.mols[t].type == 5){
                                     grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
                                     this.mols[t].marked = 1
                                 }
@@ -1852,6 +1894,33 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
                     atom.type = 1
                     this.dots.push(atom)
+                }
+
+                if(Math.random()<.005){
+                    if(this.hydrogen<300){
+                        if(this.spigot == 1){
+                            this.hydrogen+=50
+                            let hydro = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                            hydro.type = 1
+                            this.dots.unshift(hydro)
+                        }
+                    }
+                    if(this.nitrogen<250){
+                        if(this.spigot == 2){
+                            this.nitrogen+=50
+                            let nitrogen = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                            nitrogen.type = 3
+                            this.dots.unshift(nitrogen)
+                        }
+                    }
+                    if(this.carbon<200){
+                        if(this.spigot == 3){
+                            this.carbon+=50
+                            let carbon = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                            carbon.type = 2
+                            this.dots.unshift(carbon)
+                        }
+                    }
                 }
         
         }
