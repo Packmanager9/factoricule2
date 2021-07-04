@@ -485,8 +485,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.type == 5){
                 this.color = "#FF00FF"
             }
+            if(this.type == 6){
+                this.color = "#00FFFF"
+            }
             if(this.type == 10){
                 this.color = "#FFFFFF"
+            }
+            if(this.type == 11){
+                this.color = "#FFAA00"
             }
             canvas_context.strokeStyle = this.color
             canvas_context.stokeWidth = 1
@@ -1055,6 +1061,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             candyman.structures.push(etylbase)
                             candyman.selectedindex++
                         }
+                        if(keysPressed['h']){
+                            let h2base = new Assembler(grid.blocks[t])
+                            h2base.body.type = 6
+                            candyman.structures.push(h2base)
+                            candyman.selectedindex++
+                        }
                         if(keysPressed['o']){
                            let co2base = new Assembler(grid.blocks[t])
                            co2base.body.type = 5
@@ -1064,6 +1076,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         if(keysPressed['x']){
                            let glucbase = new Compssembler(grid.blocks[t])
                            glucbase.body.type = 10
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
+                        if(keysPressed['c']){
+                           let glucbase = new Compssembler(grid.blocks[t])
+                           glucbase.body.type = 11
                            candyman.structures.push(glucbase)
                            candyman.selectedindex++
                         }
@@ -1440,6 +1458,18 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }
                     // console.log(this.tile)
                 }
+                if(this.body.type == 6){
+                    if(this.tile.nitrogen >= 50){
+                        if(this.tile.hydrogen >= 100){
+                            this.tile.nitrogen-=50
+                            this.tile.hydrogen-=100
+                            let h20 = new Circle(this.tile.glob.x,this.tile.glob.y, 1.1, "#00FFFF", Math.random()-.5,Math.random()-.5)
+                            h20.type = 6
+                            this.tile.mols.push(h20)
+                        }
+                    }
+                    // console.log(this.tile)
+                }
             // }
         }
     }
@@ -1473,7 +1503,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         }
                     }
                     if(etysum >= 3){
-                        if(etysum >= 3){
+                        if(co2sum >= 3){
 
                     for(let t = 0;t<this.tile.mols.length;t++){
                         if(co2ind.includes(t)||etyind.includes(t)){
@@ -1486,19 +1516,35 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         }
                     }
                 }
-                if(this.body.type == 5){
-                    if(this.tile.nitrogen >= 100){
-                        if(this.tile.carbon >= 50){
-                            this.tile.nitrogen-=100
-                            this.tile.carbon-=50
-                            let co2 = new Circle(this.tile.glob.x,this.tile.glob.y, 1.3, "#FF00FF", Math.random()-.5,Math.random()-.5)
-                            co2.type = 5
-                            this.tile.mols.push(co2)
+                if(this.body.type == 11){
+                    let co2sum = 0
+                    let etysum = 0
+                    let co2ind = []
+                    let etyind = []
+                    for(let t = 0;t<this.tile.mols.length;t++){
+                        if(this.tile.mols[t].type == 6 && etysum<3){
+                            etysum++
+                            etyind.push(t)
+                        }
+                        if(this.tile.mols[t].type == 5 && co2sum<3){
+                            co2sum++
+                            co2ind.push(t)
                         }
                     }
-                    // console.log(this.tile)
+                    if(etysum >= 2){
+                        if(co2sum >= 3){
+
+                    for(let t = 0;t<this.tile.mols.length;t++){
+                        if(co2ind.includes(t)||etyind.includes(t)){
+                            this.tile.mols[t].marked=1
+                        }
+                    }
+                            let citricacid = new Circle(this.tile.glob.x,this.tile.glob.y, 1.8, "#FFAA00", Math.random()-.5,Math.random()-.5)
+                            citricacid.type = 11
+                            this.tile.compmols.push(citricacid)
+                        }
+                    }
                 }
-            // }
         }
     }
     class Arm{
@@ -1553,7 +1599,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     if(this.particle.type == 5){
                         grid.blocks[t].mols.unshift(this.particle.copy())
                     }
+                    if(this.particle.type == 6){
+                        grid.blocks[t].mols.unshift(this.particle.copy())
+                    }
                     if(this.particle.type == 10){
+                        grid.blocks[t].compmols.unshift(this.particle.copy())
+                    }
+                    if(this.particle.type == 11){
                         grid.blocks[t].compmols.unshift(this.particle.copy())
                     }
                     if(this.particle.type == 1){
@@ -1613,20 +1665,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.g.y = (this.lf.y+this.rf.y)/2
             for(let t = 0;t<grid.blocks.length;t++){
                 if(grid.blocks[t].body.isPointInside(this.g)){
-                    if(grid.blocks[t].assembler == 1){
-
-                        if(grid.blocks[t].mols.length > 0){
-                            this.grip = 16
-                            this.particle = grid.blocks[t].mols[0]
-                            this.particle.gripped = 1
-                            // this.particle.type = 1
-                            this.subind = t
-                        }
-                    }else if(grid.blocks[t].compssembler == 1){
+                    if(grid.blocks[t].compssembler == 1 || grid.blocks[t].compmols.length>0){
 
                         if(grid.blocks[t].compmols.length > 0){
                             this.grip = 16
                             this.particle = grid.blocks[t].compmols[0]
+                            this.particle.gripped = 1
+                            // this.particle.type = 1
+                            this.subind = t
+                        }
+                    }else if(grid.blocks[t].assembler == 1 || grid.blocks[t].mols.length>0){
+
+                        if(grid.blocks[t].mols.length > 0){
+                            this.grip = 16
+                            this.particle = grid.blocks[t].mols[0]
                             this.particle.gripped = 1
                             // this.particle.type = 1
                             this.subind = t
@@ -1881,6 +1933,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
                                     this.mols[t].marked = 1
                                 }
+                                if(this.mols[t].type == 6){
+                                    grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
+                                    this.mols[t].marked = 1
+                                }
                                 if(this.mols[t].type == 1){                                    
                                     // console.log(grid.blocks[this.neighbors[k]].mols, grid.blocks[this.neighbors[k]].mols.length)
 
@@ -1937,6 +1993,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.compmols[t])){
                                 if(this.compmols[t].type == 10){
+                                    grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
+                                    this.compmols[t].marked = 1
+                                }
+                                if(this.compmols[t].type == 11){
                                     grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
                                     this.compmols[t].marked = 1
                                 }
