@@ -272,6 +272,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.reflect = reflect
             this.strokeWidth = strokeWidth
             this.strokeColor = strokeColor
+            this.type =1
         }
         copy(){
             let copy = new Circle(0,0,0,0)
@@ -291,6 +292,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
         draw() {
 
             canvas_context.lineWidth = this.strokeWidth
+            if(this.type == 1){
+                this.color = "#00FF00"
+            }
+            if(this.type == 2){
+                this.color = "#FF0000"
+            }
+            if(this.type == 3){
+                this.color = "#0000FF"
+            }
             canvas_context.strokeStyle = this.color
             canvas_context.beginPath();
             if (this.radius > 0) {
@@ -299,7 +309,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 canvas_context.fill()
                 canvas_context.stroke();
             } else {
-                console.log("The circle is below a radius of 0, and has not been drawn. The circle is:", this)
+                // console.log("The circle is below a radius of 0, and has not been drawn. The circle is:", this)
             }
         }
         move() {
@@ -887,6 +897,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
                         candyman.structures.push(new Arm(grid.blocks[t]))
+                        candyman.selectedindex++
                     }
                 }
             }
@@ -1015,6 +1026,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.body = new Circle(100,100, 4, "#FFFFFF")
             this.tile = grid.blocks[Math.round(grid.w*11.15)]
             this.structures = []
+            this.selectedindex = -1
         }
         draw(){
             this.body.x = this.tile.glob.x
@@ -1222,20 +1234,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     if(this.particle.type == 1){
                         grid.blocks[t].hydrogen+= 50
                         grid.blocks[t].dots.unshift(this.particle.copy())
-                        this.particle.marked = 1
-                        this.particle.type = 0
+                        // this.particle.marked = 1
+                        // this.particle.type = 0
                     }
                     if(this.particle.type == 2){
                         grid.blocks[t].carbon+= 50
                         grid.blocks[t].dots.unshift(this.particle.copy())
-                        this.particle.marked = 1
-                        this.particle.type = 0
+                        // this.particle.marked = 1
+                        // this.particle.type = 0
                     }
                     if(this.particle.type == 3){
                         grid.blocks[t].nitrogen+= 50
                         grid.blocks[t].dots.unshift(this.particle.copy())
-                        this.particle.marked = 1
-                        this.particle.type = 0
+                        // this.particle.marked = 1
+                        // this.particle.type = 0
                     }
 
                     if(this.particle.type ==1){
@@ -1246,7 +1258,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }
                     if(this.particle.type ==3){
                         grid.blocks[this.subind].nitrogen-=50
-                    }
+                    } 
+                    this.particle.marked = 1
+                    // this.particle.type = 0
+                    this.particle = new Circle(0,0,0,"transparent")
+                    this.particle.type = 0
 
                     grid.blocks[this.subind].cleandots()
                         continue
@@ -1255,9 +1271,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
         }
         grab(){
-            if(this.particle.type != 0){
-                return
-            }
+            // if(this.particle.type != 0){
+            //     return
+            // }
 
             this.g.x = (this.lf.x+this.rf.x)/2
             this.g.y = (this.lf.y+this.rf.y)/2
@@ -1265,7 +1281,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 if(grid.blocks[t].body.isPointInside(this.g)){
                     if(Math.min(grid.blocks[t].dotwork, grid.blocks[t].dots.length) > 0){
                         this.grip = 16
-                        this.particle = grid.blocks[t].dots[0]
+                        this.particle = grid.blocks[t].dots[grid.blocks[t].dotwork-1]
                         this.particle.gripped = 1
                         // this.particle.type = 1
                     
@@ -1279,6 +1295,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
         draw(){
             // if(this.center.isPointInside(TIP_engine)){
+                    if(candyman.structures.indexOf(this) == candyman.selectedindex){
+                        
                 if(keysPressed['i']){
                     this.startangle+=.051
                     if(this.startangle>Math.PI*2){
@@ -1303,6 +1321,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.endangle=0
                     }
                 }
+
+            }
             // }
             this.crotch.x = this.center.x +( Math.cos(this.angle)*this.length)
             this.crotch.y = this.center.y +( Math.sin(this.angle)*this.length)
@@ -1434,29 +1454,30 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.dots[t].y+=.01*this.ydir
                         for(let k = 0;k<this.neighbors.length;k++){
                             if(this.neighbors[k] == this.dots[t].last){
+                                console.log(this)
                                 continue
                             }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.dots[t])){
                                 if(this.dots[t].type == 1){                                    
-                                    console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
+                                    // console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
 
                                     this.hydrogen-=50
                                     grid.blocks[this.neighbors[k]].hydrogen += 50
                                     grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
-                                    console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
+                                    // console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
 
-                                    for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
-                                        grid.blocks[this.neighbors[k]].dots[r].type =1
-                                    }
+                                    // for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
+                                    //     grid.blocks[this.neighbors[k]].dots[r].type =1
+                                    // }
                                 this.dots[t].marked = 1
                                 }
                                 if(this.dots[t].type == 2){
                                     this.carbon-=50
                                     grid.blocks[this.neighbors[k]].carbon += 50
                                     grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
-                                    for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
-                                        grid.blocks[this.neighbors[k]].dots[r].type =2
-                                    }
+                                    // for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
+                                    //     grid.blocks[this.neighbors[k]].dots[r].type =2
+                                    // }
                                     this.dots[t].marked = 1
                                     // t--
                                 }
@@ -1465,9 +1486,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     grid.blocks[this.neighbors[k]].nitrogen += 50
                                     grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
                                     // t--
-                                    for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
-                                        grid.blocks[this.neighbors[k]].dots[r].type =3
-                                    }
+                                    // for(let r = 0;r<grid.blocks[this.neighbors[k]].dots.length;r++){
+                                    //     grid.blocks[this.neighbors[k]].dots[r].type =3
+                                    // }
                                     this.dots[t].marked = 1
 
                                 }
@@ -1485,13 +1506,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
             for(let t =0;t<this.dots.length;t++){
                 if(this.dots[t].marked == 1){
                     this.dots.splice(t,1)
-                    t--
+                    // t--
+                    console.log("dawhkdj")
                 }
             }
         }
         getAtoms(){
 
-            for(let t = 0;t<15;t++){
+            for(let t = 0;t<Math.ceil((this.hydrogen+this.nitrogen+this.carbon)/50);t++){
                 let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
                 atom.type = 1
                 if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
@@ -1525,30 +1547,37 @@ window.addEventListener('DOMContentLoaded', (event) => {
             // this.glob.draw()
         }
         freeDots(){
-            if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) < (this.dotwork)*50){
-                // this.dots.splice(0,1)
-                this.dotwork--
-                this.dotworkx = this.dotwork
-            }else{
-                if(((this.carbon)+(this.hydrogen)+(this.nitrogen)) >= (this.dotworkx+1)*50){
-
-                    // console.log((this.carbon)+(this.hydrogen)+(this.nitrogen) , (this.dotwork)*50)
-                this.dotwork++
+            this.dotwork =Math.ceil((this.hydrogen+this.nitrogen+this.carbon)/50)
+            // console.log(this.hydrogen, this.carbon, this.nitrogen)
                 while(this.dotwork > this.dots.length){
                     let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                    atom.type = 1
                     this.dots.push(atom)
                 }
-                }
-            }
+        
         }
         atomize(){
 
             for(let t = 0;t<Math.min(this.dotwork, this.dots.length);t++){
+                if(this.dots[t].type == 1){
+
+                    this.dots[t].color= "#00FF00"
+                }
+                // if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
+
+                    if(this.dots[t].type == 2){
+                    this.dots[t].color = "#FF0000"
+                }
+                // if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
+
+                    if(this.dots[t].type == 3){
+                    this.dots[t].color = "#0000ff"
+                }
                 if(this.dots[t].gripped != 1 || this.belt == 1){
 
                     let link = new LineOP(this.body, candyman.body)
                     if(link.sqrDis() < 66000){
-                        if(this.dots[t].age > 1){
+                        if(this.dots[t].age >0){
                             this.dots[t].draw()
                         }else{
                             this.dots[t].age++
@@ -1584,22 +1613,28 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }
                 }
             // this.dots[t].color =  `rgb(${Math.max(this.carbon*4, 100)}, ${Math.max(this.hydrogen*4,100)}, ${Math.max(this.nitrogen*4,100)})`
-                if(this.dots[t].gripped!=1 || this.belt == 1){
+                // if(this.dots[t].gripped!=1 ){
 
-                    if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
+                    // if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
+                        if(this.dots[t].type == 1){
+
                         this.dots[t].color= "#00FF00"
                     }
-                    if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
+                    // if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
+
+                        if(this.dots[t].type == 2){
                         this.dots[t].color = "#FF0000"
                     }
-                    if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
+                    // if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
+
+                        if(this.dots[t].type == 3){
                         this.dots[t].color = "#0000ff"
                     }
-                }
+                // }
                 }else if(this.belt == 1){
                     let link = new LineOP(this.body, candyman.body)
                     if(link.sqrDis() < 66000){
-                        if(this.dots[t].age > 1){
+                        if(this.dots[t].age > 0){
                             this.dots[t].draw()
                         }else{
                             this.dots[t].age++
