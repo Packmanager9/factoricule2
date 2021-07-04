@@ -485,6 +485,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.type == 5){
                 this.color = "#FF00FF"
             }
+            if(this.type == 10){
+                this.color = "#FFFFFF"
+            }
             canvas_context.strokeStyle = this.color
             canvas_context.stokeWidth = 1
             canvas_context.beginPath();
@@ -1052,12 +1055,18 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             candyman.structures.push(etylbase)
                             candyman.selectedindex++
                         }
-                         if(keysPressed['o']){
-                            let co2base = new Assembler(grid.blocks[t])
-                            co2base.body.type = 5
-                            candyman.structures.push(co2base)
-                            candyman.selectedindex++
-                         }
+                        if(keysPressed['o']){
+                           let co2base = new Assembler(grid.blocks[t])
+                           co2base.body.type = 5
+                           candyman.structures.push(co2base)
+                           candyman.selectedindex++
+                        }
+                        if(keysPressed['x']){
+                           let glucbase = new Compssembler(grid.blocks[t])
+                           glucbase.body.type = 10
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
                     }
                 }
             }
@@ -1384,6 +1393,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 this.blocks[t].molecularize()
             }
             for(let t = 0;t<this.blocks.length;t++){
+                this.blocks[t].compmolecularize()
+            }
+            for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].cleandots()
             }
             for(let t = 0;t<this.blocks.length;t++){
@@ -1413,6 +1425,64 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             let acetyl = new Circle(this.tile.glob.x,this.tile.glob.y, 1.5, "#FFFF00", Math.random()-.5,Math.random()-.5)
                             acetyl.type = 4
                             this.tile.mols.push(acetyl)
+                        }
+                    }
+                }
+                if(this.body.type == 5){
+                    if(this.tile.nitrogen >= 100){
+                        if(this.tile.carbon >= 50){
+                            this.tile.nitrogen-=100
+                            this.tile.carbon-=50
+                            let co2 = new Circle(this.tile.glob.x,this.tile.glob.y, 1.3, "#FF00FF", Math.random()-.5,Math.random()-.5)
+                            co2.type = 5
+                            this.tile.mols.push(co2)
+                        }
+                    }
+                    // console.log(this.tile)
+                }
+            // }
+        }
+    }
+
+    class Compssembler {
+        constructor(tile){
+            this.tile = tile 
+            this.body =  new Circles(this.tile.glob.x, this.tile.glob.y, this.tile.body.width*.5, "#FFFF00")
+            // this.body.type = 4
+            this.tile.compssembler = 1
+        }
+        draw(){
+            this.body.draw()
+            this.make()
+        }
+        make(){
+            // for(let t = 0;t<this.tile.dots.length;t++){
+                if(this.body.type == 10){
+                    let co2sum = 0
+                    let etysum = 0
+                    let co2ind = []
+                    let etyind = []
+                    for(let t = 0;t<this.tile.mols.length;t++){
+                        if(this.tile.mols[t].type == 4 && etysum<3){
+                            etysum++
+                            etyind.push(t)
+                        }
+                        if(this.tile.mols[t].type == 5 && co2sum<3){
+                            co2sum++
+                            co2ind.push(t)
+                        }
+                    }
+                    if(etysum >= 3){
+                        if(etysum >= 3){
+
+                    for(let t = 0;t<this.tile.mols.length;t++){
+                        if(co2ind.includes(t)||etyind.includes(t)){
+                            this.tile.mols[t].marked=1
+                        }
+                    }
+                            let glucose = new Circle(this.tile.glob.x,this.tile.glob.y, 1.9, "#FFFFFF", Math.random()-.5,Math.random()-.5)
+                            glucose.type = 10
+                            this.tile.compmols.push(glucose)
                         }
                     }
                 }
@@ -1478,12 +1548,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
             for(let t = 0;t<grid.blocks.length;t++){
                 if(grid.blocks[t].body.isPointInside(this.g)){
                     if(this.particle.type == 4){
-                        // grid.blocks[t].hydrogen+= 50
                         grid.blocks[t].mols.unshift(this.particle.copy())
                     }
                     if(this.particle.type == 5){
-                        // grid.blocks[t].hydrogen+= 50
                         grid.blocks[t].mols.unshift(this.particle.copy())
+                    }
+                    if(this.particle.type == 10){
+                        grid.blocks[t].compmols.unshift(this.particle.copy())
                     }
                     if(this.particle.type == 1){
                         grid.blocks[t].hydrogen+= 50
@@ -1516,6 +1587,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     if(this.particle.type ==4){
                         grid.blocks[this.subind].mols.splice(0,1)
                     } 
+                    if(this.particle.type ==5){
+                        grid.blocks[this.subind].mols.splice(0,1)
+                    } 
+                    if(this.particle.type ==10){
+                        grid.blocks[this.subind].compmols.splice(0,1)
+                    } 
                     this.particle.marked = 1
                     // this.particle.type = 0
                     this.particle = new Circle(0,0,0,"transparent")
@@ -1541,6 +1618,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         if(grid.blocks[t].mols.length > 0){
                             this.grip = 16
                             this.particle = grid.blocks[t].mols[0]
+                            this.particle.gripped = 1
+                            // this.particle.type = 1
+                            this.subind = t
+                        }
+                    }else if(grid.blocks[t].compssembler == 1){
+
+                        if(grid.blocks[t].compmols.length > 0){
+                            this.grip = 16
+                            this.particle = grid.blocks[t].compmols[0]
                             this.particle.gripped = 1
                             // this.particle.type = 1
                             this.subind = t
@@ -1666,6 +1752,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.neighbors = []
             this.dots = []
             this.mols = []
+            this.compmols = []
             this.body = new Rectangle(x,y,w,h,color)
             this.glob = new Circle(x+w*.5,y+w*.5,w*.5,getRandomColor())
             this.mglob = new Circle(x+w*.5,y+w*.5,w*.05,getRandomColor())
@@ -1834,6 +1921,31 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }else{
                     }
                 }
+                for(let t = 0;t<this.compmols.length;t++){
+                    if(this.body.isPointInside(this.compmols[t])){
+                    this.compmols[t].x+=.11*this.xdir
+                    this.compmols[t].y+=.11*this.ydir
+                    this.compmols[t].gripped = 1
+                    this.compmols[t].last = grid.blocks.indexOf(this)
+                    }
+                    if(!this.body.isPointInside(this.compmols[t])){
+                        this.compmols[t].x+=.01*this.xdir
+                        this.compmols[t].y+=.01*this.ydir
+                        for(let k = 0;k<this.neighbors.length;k++){
+                            if(this.neighbors[k] == this.compmols[t].last){
+                                continue
+                            }
+                            if(grid.blocks[this.neighbors[k]].body.isPointInside(this.compmols[t])){
+                                if(this.compmols[t].type == 10){
+                                    grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
+                                    this.compmols[t].marked = 1
+                                }
+                                break
+                            }
+                        }
+                    }else{
+                    }
+                }
             }
             link.draw()
             this.cleandots()
@@ -1848,6 +1960,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
             for(let t =0;t<this.mols.length;t++){
                 if(this.mols[t].marked == 1){
                     this.mols.splice(t,1)
+                    // t--
+                }
+            }
+            for(let t =0;t<this.compmols.length;t++){
+                if(this.compmols[t].marked == 1){
+                    this.compmols.splice(t,1)
                     // t--
                 }
             }
@@ -2076,6 +2194,63 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             this.mols[t].draw()
                         }else{
                             this.mols[t].age++
+                        }
+                    }
+                }
+            }
+        }
+        compmolecularize(){
+
+            for(let t = 0;t<this.compmols.length;t++){
+                if(this.compmols[t].gripped != 1 || this.belt == 1){
+
+                    let link = new LineOP(this.body, candyman.body)
+                    if(link.sqrDis() < 66000){
+                        if(this.compmols[t].age >0){
+                            this.compmols[t].draw()
+                        }else{
+                            this.compmols[t].age++
+                        }
+                        
+                    if (this.compmols[t].x + this.compmols[t].radius > this.body.x+this.body.width) {
+                        if (this.compmols[t].xmom > 0) {
+                            this.compmols[t].xmom *= -1
+                        }
+                    }
+                    if (this.compmols[t].y + this.compmols[t].radius > this.body.y+this.body.height) {
+                        if (this.compmols[t].ymom > 0) {
+                            this.compmols[t].ymom *= -1
+                        }
+                    }
+                    if (this.compmols[t].x - this.compmols[t].radius < this.body.x) {
+                        if (this.compmols[t].xmom < 0) {
+                            this.compmols[t].xmom *= -1
+                        }
+                    }
+                    if (this.compmols[t].y - this.compmols[t].radius < this.body.y) {
+                        if (this.compmols[t].ymom < 0) {
+                            this.compmols[t].ymom *= -1
+                        }
+                    }
+                
+                    if(this.belt == 1){
+                        this.compmols[t].x += this.compmols[t].xmom*.05
+                        this.compmols[t].y += this.compmols[t].ymom*.05
+                    }else{
+                        this.compmols[t].x += this.compmols[t].xmom
+                        this.compmols[t].y += this.compmols[t].ymom
+                    }
+                }
+                        if(this.compmols[t].type == 10){
+                        this.compmols[t].color= "#FFFFFF"
+                    }
+                }else if(this.belt == 1){
+                    let link = new LineOP(this.body, candyman.body)
+                    if(link.sqrDis() < 66000){
+                        if(this.compmols[t].age > 0){
+                            this.compmols[t].draw()
+                        }else{
+                            this.compmols[t].age++
                         }
                     }
                 }
