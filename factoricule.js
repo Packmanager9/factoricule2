@@ -1055,11 +1055,46 @@ window.addEventListener('DOMContentLoaded', (event) => {
             FLEX_engine = canvas.getBoundingClientRect();
             XS_engine = e.clientX - FLEX_engine.left;
             YS_engine = e.clientY - FLEX_engine.top;
-            console.log(canvas_context.getTransform())
+            // console.log(canvas_context.getTransform())
             TIP_engine.x = XS_engine/3- canvas_context.getTransform().e/3
             TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
             // example usage: if(object.isPointInside(TIP_engine)){ take action }
+
+
+            if(keysPressed['z']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        for(let j = 0;j<grid.blocks[t].dots.length;j++){
+                            if(grid.blocks[t].body.isPointInside(grid.blocks[t].dots[j])){
+                                grid.blocks[t].dots[j].gripped = 0
+                            }
+                        }
+                        for(let j = 0;j<grid.blocks[t].mols.length;j++){
+                            if(grid.blocks[t].body.isPointInside(grid.blocks[t].mols[j])){
+                                grid.blocks[t].mols[j].gripped = 0
+                            }
+                        }
+                        for(let j = 0;j<grid.blocks[t].compmols.length;j++){
+                            if(grid.blocks[t].body.isPointInside(grid.blocks[t].compmols[j])){
+                                grid.blocks[t].compmols[j].gripped = 0
+                            }
+                        }
+                        grid.blocks[t].belt = 0
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = 0
+                        for(let k = 0;k<candyman.structures.length;k++){
+                            if(candyman.structures[k].tile == grid.blocks[t]){
+                                candyman.structures.splice(k,1)
+                                candyman.selectedindex--
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+
+
             if(keysPressed['q']){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
@@ -1167,19 +1202,69 @@ window.addEventListener('DOMContentLoaded', (event) => {
             //         this.ydir = -1
             //     }else{
             //         this.ydir = 0
+        window.addEventListener('pointermove', track);
             //     }
         });
         window.addEventListener('pointermove', continued_stimuli);
 
         window.addEventListener('pointerup', e => {
+        window.removeEventListener('pointermove', track);
             // window.removeEventListener("pointermove", continued_stimuli);
         })
+        function track(e){
+            FLEX_engine = canvas.getBoundingClientRect();
+            XS_engine = e.clientX - FLEX_engine.left;
+            YS_engine = e.clientY - FLEX_engine.top;
+            // console.log(canvas_context.getTransform())
+            TIP_engine.x = XS_engine/3- canvas_context.getTransform().e/3
+            TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
+            TIP_engine.body = TIP_engine
+                
+            if(keysPressed['n']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 1
+                        grid.blocks[t].ydir = 0
+                    }
+                }
+            }
+            if(keysPressed['v']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = -1
+                        grid.blocks[t].ydir = 0
+                    }
+                }
+            }
+            if(keysPressed['g']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = -1
+                    }
+                }
+            }
+            if(keysPressed['b']){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = 1
+                    }
+                }
+            }
+
+        }
         function continued_stimuli(e) {
             FLEX_engine = canvas.getBoundingClientRect();
             XS_engine = e.clientX - FLEX_engine.left;
             YS_engine = e.clientY - FLEX_engine.top;
-            TIP_engine.x = XS_engine
-            TIP_engine.y = YS_engine
+            // console.log(canvas_context.getTransform())
+            TIP_engine.x = XS_engine/3- canvas_context.getTransform().e/3
+            TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
         }
     }
