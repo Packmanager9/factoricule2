@@ -1085,6 +1085,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         grid.blocks[t].ydir = 0
                         for(let k = 0;k<candyman.structures.length;k++){
                             if(candyman.structures[k].tile == grid.blocks[t]){
+                                if(candyman.structures[k].body.type > 3 && candyman.structures[k].body.type < 10){
+                                    grid.blocks[t].assembler = 0
+                                }
+                                if(candyman.structures[k].body.type > 9){
+                                    grid.blocks[t].compssembler = 0
+                                }
                                 candyman.structures.splice(k,1)
                                 candyman.selectedindex--
                                 break
@@ -1463,6 +1469,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
 
             }
+            
          }
         giveAtoms(){
             for(let t = 0;t<this.blocks.length;t++){
@@ -2053,16 +2060,16 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     this.dots[t].x+=.11*this.xdir
                     this.dots[t].y+=.11*this.ydir
                     this.dots[t].gripped = 1
-                    this.dots[t].last = grid.blocks.indexOf(this)
+                    // this.dots[t].last = grid.blocks.indexOf(this)
                     }
                     if(!this.body.isPointInside(this.dots[t])){
                         this.dots[t].x+=.01*this.xdir
                         this.dots[t].y+=.01*this.ydir
                         for(let k = 0;k<this.neighbors.length;k++){
-                            if(this.neighbors[k] == this.dots[t].last){
-                                console.log(this)
-                                continue
-                            }
+                            // if(this.neighbors[k] == this.dots[t].last){
+                            //     console.log(this)
+                            //     continue
+                            // }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.dots[t])){
                                 if(this.dots[t].type == 1){                                    
                                     // console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
@@ -2109,15 +2116,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     this.mols[t].x+=.11*this.xdir
                     this.mols[t].y+=.11*this.ydir
                     this.mols[t].gripped = 1
-                    this.mols[t].last = grid.blocks.indexOf(this)
+                    // this.mols[t].last = grid.blocks.indexOf(this)
                     }
                     if(!this.body.isPointInside(this.mols[t])){
                         this.mols[t].x+=.01*this.xdir
                         this.mols[t].y+=.01*this.ydir
                         for(let k = 0;k<this.neighbors.length;k++){
-                            if(this.neighbors[k] == this.mols[t].last){
-                                continue
-                            }
+                            // if(this.neighbors[k] == this.mols[t].last){
+                            //     continue
+                            // }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.mols[t])){
 
                                 if(this.mols[t].type == 4){
@@ -2177,15 +2184,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     this.compmols[t].x+=.11*this.xdir
                     this.compmols[t].y+=.11*this.ydir
                     this.compmols[t].gripped = 1
-                    this.compmols[t].last = grid.blocks.indexOf(this)
+                    // this.compmols[t].last = grid.blocks.indexOf(this)
                     }
                     if(!this.body.isPointInside(this.compmols[t])){
                         this.compmols[t].x+=.01*this.xdir
                         this.compmols[t].y+=.01*this.ydir
                         for(let k = 0;k<this.neighbors.length;k++){
-                            if(this.neighbors[k] == this.compmols[t].last){
-                                continue
-                            }
+                            // if(this.neighbors[k] == this.compmols[t].last){
+                            //     continue
+                            // }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.compmols[t])){
                                 if(this.compmols[t].type == 10){
                                     grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
