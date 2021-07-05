@@ -2219,6 +2219,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
         atomize(){
 
             for(let t = 0;t<Math.min(this.dotwork, this.dots.length);t++){
+
+                if(t > 20){
+                    continue
+                }
                 if(this.dots[t].type == 1){
 
                     this.dots[t].color= "#00FF00"
@@ -2309,6 +2313,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
         molecularize(){
 
             for(let t = 0;t<this.mols.length;t++){
+                if(t > 20){
+                    continue
+                }
                 if(this.mols[t].type == 1){
 
                     this.mols[t].color= "#00FF00"
@@ -2376,6 +2383,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
         compmolecularize(){
 
             for(let t = 0;t<this.compmols.length;t++){
+
+                if(t > 20){
+                    continue
+                }
                 if(this.compmols[t].gripped != 1 || this.belt == 1){
 
                     let link = new LineOP(this.body, candyman.body)
