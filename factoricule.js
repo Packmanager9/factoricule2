@@ -717,6 +717,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
             canvas_context.lineTo(this.nodes[0].x, this.nodes[0].y)
             // canvas_context.fill()
+            canvas_context.lineWidth = .5
             canvas_context.stroke()
             canvas_context.closePath()
         }
@@ -1061,6 +1062,111 @@ window.addEventListener('DOMContentLoaded', (event) => {
             TIP_engine.body = TIP_engine
             // example usage: if(object.isPointInside(TIP_engine)){ take action }
 
+            if(keysPressed['m'] || keysPressed[' ']){
+                for(let t = 0;t<menu.blocks.length;t++){
+                    if(menu.blocks[t].isPointInside(TIP_engine)){
+                        menu.selector = t
+                        return
+                    }
+                }
+
+
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+
+            if(menu.selector == 1){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 1
+                        grid.blocks[t].ydir = 0
+                    }
+                }
+            }
+            if(menu.selector == 2){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = -1
+                        grid.blocks[t].ydir = 0
+                    }
+                }
+            }
+            if(menu.selector == 3){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = -1
+                    }
+                }
+            }
+            if(menu.selector == 4){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = 1
+                    }
+                }
+            }
+
+
+            if(menu.selector == 0){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        candyman.structures.push(new Arm(grid.blocks[t]))
+                        candyman.selectedindex++
+                    }
+                }
+            }
+
+                        if(menu.selector == 5){
+                            let etylbase = new Assembler(grid.blocks[t])
+                            etylbase.body.type = 4
+                            candyman.structures.push(etylbase)
+                            candyman.selectedindex++
+                        }
+                        if(menu.selector == 7){
+                            let h2base = new Assembler(grid.blocks[t])
+                            h2base.body.type = 6
+                            candyman.structures.push(h2base)
+                            candyman.selectedindex++
+                        }
+                        if(menu.selector == 6){
+                           let co2base = new Assembler(grid.blocks[t])
+                           co2base.body.type = 5
+                           candyman.structures.push(co2base)
+                           candyman.selectedindex++
+                        }
+                        if(menu.selector == 8){
+                           let glucbase = new Compssembler(grid.blocks[t])
+                           glucbase.body.type = 10
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
+                        if(menu.selector == 9){
+                           let glucbase = new Compssembler(grid.blocks[t])
+                           glucbase.body.type = 11
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
+                        if(menu.selector == 10){
+                           let glucbase = new Compssembler(grid.blocks[t])
+                           glucbase.body.type = 12
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
+                        if(menu.selector == 11){
+                           let glucbase = new Cup(grid.blocks[t])
+                           candyman.structures.push(glucbase)
+                           candyman.selectedindex++
+                        }
+                    }
+                }
+
+            }else{
+
 
             if(keysPressed['z']){
                 for(let t = 0;t<grid.blocks.length;t++){
@@ -1195,6 +1301,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
 
 
+            }
+
             // this.belt = 1
             // if(Math.random()<.3){
             //     this.xdir = 1
@@ -1225,6 +1333,44 @@ window.addEventListener('DOMContentLoaded', (event) => {
             TIP_engine.x = XS_engine/3- canvas_context.getTransform().e/3
             TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
+
+
+            if(menu.selector == 1){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 1
+                        grid.blocks[t].ydir = 0
+                    }
+                }
+            }
+            if(menu.selector == 2){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = -1
+                        grid.blocks[t].ydir = 0
+                    }
+                }
+            }
+            if(menu.selector == 3){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = -1
+                    }
+                }
+            }
+            if(menu.selector == 4){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 1
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = 1
+                    }
+                }
+            }
                 
             if(keysPressed['n']){
                 for(let t = 0;t<grid.blocks.length;t++){
@@ -1362,6 +1508,80 @@ window.addEventListener('DOMContentLoaded', (event) => {
     // object instantiation and creation happens here 
 
     canvas_context.scale(3,3)
+
+    class UI{
+        constructor(){
+            this.body = new Rectangle(candyman.body.x - 100, candyman.body.y+ 100, 60, 60, "#888888" )
+            this.toggle = 0
+            this.selector = -1
+        }
+        draw(){
+            if(keysPressed['m'] || keysPressed[' ']){
+                this.toggle = 1
+            }else{
+                this.toggle = 0
+                this.selector = -1
+            }
+            if(this.toggle == 1){
+
+            this.body = new Rectangle(candyman.body.x - 100, candyman.body.y+ 40, 60, 60, "#999999" )
+            this.body.draw()
+
+            this.blocks = []
+            for(let t = 0;t<25;t++){
+                let block = new Rectangle(5+this.body.x+((t%5)*10),5+this.body.y+(Math.floor(t/5)*10), 10,10, "#333333")
+                block.detail = {}
+                if(t == 0){
+                    block.detail = new ArmIcon(block)
+                }else if(t == 1){
+                    block.detail = new Polygon(block.x+5+1.5, block.y+5, 1, "yellow", 3, 0,0,0,0)
+                }else if(t == 2){
+                    block.detail = new Polygon(block.x+5-1.5, block.y+5, 1, "yellow", 3, 0,0,Math.PI,0)
+                }else if(t == 3){
+                    block.detail = new Polygon(block.x+5, block.y+3.5, 1, "yellow", 3, 0,0,Math.PI*1.5,0)
+                }else if(t == 4){
+                    block.detail = new Polygon(block.x+5, block.y+6.5, 1, "yellow", 3, 0,0,Math.PI*.5,0)
+                }else if(t == 5){
+                    block.detail = new Circles(block.x+5, block.y+5, 4)
+                    block.detail.type = 4
+                }else if(t == 6){
+                    block.detail = new Circles(block.x+5, block.y+5, 4)
+                    block.detail.type = 5
+                }else if(t == 7){
+                    block.detail = new Circles(block.x+5, block.y+5, 4)
+                    block.detail.type = 6
+                }else if(t == 8){
+                    block.detail = new Circles(block.x+5, block.y+5, 4)
+                    block.detail.type = 10
+                }else if(t == 9){
+                    block.detail = new Circles(block.x+5, block.y+5, 4)
+                    block.detail.type = 11
+                }else if(t == 10){
+                    block.detail = new Circles(block.x+5, block.y+5, 4)
+                    block.detail.type = 12
+                }else if(t == 11){
+                    block.detail = new Circles(block.x+5, block.y+5, 4)
+                    block.detail.type = 21
+                }else{
+                    block.detail = new Circles(block.x+5, block.y+5, 5)
+                    block.detail.type = 0
+                    block.detail.color = "transparent"
+                }
+                this.blocks.push(block)
+            }
+            for(let t = 0;t<this.blocks.length;t++){
+                if(this.selector==t){
+                    this.blocks[t].color = "#AAAAAA"
+                }
+                this.blocks[t].draw()
+                this.blocks[t].detail.draw()
+            }
+
+
+
+            }
+        }
+    }
 
     class Player {
         constructor(){
@@ -1999,6 +2219,100 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 
+    class ArmIcon{
+        constructor(tile){
+            this.grip = -10
+            this.timer = 0
+            this.time = 40
+            this.tile = tile
+            this.xdir = 0
+            this.ydir = -1
+            this.nodes = []
+            this.angle = 1
+            this.subind = Math.floor(Math.random()*1280)
+            this.center = new Circle(this.tile.x + 5, this.tile.y + 5, .52, "#FFFFFF")
+            this.crotch = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            
+            this.lp = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.rp = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.lf = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.rf = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.g = new Circle(this.tile.x + 5, this.tile.y + 5, .52, "#FFFFFF")
+            this.nodes.push(this.center)
+            this.nodes.push(this.crotch)
+            this.nodes.push(this.lp)
+            this.nodes.push(this.rp)
+            this.nodes.push(this.lf)
+            this.nodes.push(this.rf)
+            this.length = 3
+            this.particle = new Circle(-10000,-10000, 1, "#FFFFFF")
+            this.particle.type = 0
+            this.links = []
+            let link = new LineOP(this.center, this.crotch, "#AAAAAA", .5)
+            this.links.push(link)
+            let link2 = new LineOP(this.crotch, this.lp, "#AAAAAA", .5)
+            this.links.push(link2)
+            let link3 = new LineOP(this.crotch, this.rp, "#AAAAAA", .5)
+            this.links.push(link3)
+            let link4 = new LineOP(this.rp, this.rf, "#AAAAAA", .5)
+            this.links.push(link4)
+            let link5 = new LineOP(this.lp, this.lf, "#AAAAAA", .5)
+            this.links.push(link5)
+            this.startangle = Math.random()*Math.PI*2
+            this.endangle = Math.random()*Math.PI*2
+        }
+        draw(){
+                        
+            // }
+            this.crotch.x = this.center.x +( Math.cos(this.angle)*this.length)
+            this.crotch.y = this.center.y +( Math.sin(this.angle)*this.length)
+            if(this.grip == 0){
+            this.lp.x = this.center.x +( Math.cos(this.angle+.15)*this.length*1.13)
+            this.lp.y = this.center.y +( Math.sin(this.angle+.15)*this.length*1.13)
+            this.rp.x = this.center.x +( Math.cos(this.angle-.15)*this.length*1.13)
+            this.rp.y = this.center.y +( Math.sin(this.angle-.15)*this.length*1.13)
+                this.rf.x = this.center.x +( Math.cos(this.angle-.07)*this.length*1.27)
+                this.rf.y = this.center.y +( Math.sin(this.angle-.07)*this.length*1.27)
+                this.lf.x = this.center.x +( Math.cos(this.angle+.07)*this.length*1.27)
+                this.lf.y = this.center.y +( Math.sin(this.angle+.07)*this.length*1.27)
+                this.g.x = this.center.y +( Math.cos(this.angle)*this.length*1.26)
+                this.g.y = this.center.y +( Math.sin(this.angle)*this.length*1.26)
+                this.grip = 1
+            }else{
+
+            this.lp.x = this.center.x +( Math.cos(this.angle+.1+((this.grip-10)*-.007))*this.length*1.15)
+            this.lp.y = this.center.y +( Math.sin(this.angle+.1+((this.grip-10)*-.007))*this.length*1.15)
+            this.rp.x = this.center.x +( Math.cos(this.angle-.1-((this.grip-10)*-.007))*this.length*1.15)
+            this.rp.y = this.center.y +( Math.sin(this.angle-.1-((this.grip-10)*-.007))*this.length*1.15)
+                this.rf.x = this.center.x +( Math.cos(this.angle-.07-((this.grip-10)*-.01))*this.length*1.26)
+                this.rf.y = this.center.y +( Math.sin(this.angle-.07-((this.grip-10)*-.01))*this.length*1.26)
+                this.lf.x = this.center.x +( Math.cos(this.angle+.07+((this.grip-10)*-.01))*this.length*1.26)
+                this.lf.y = this.center.y +( Math.sin(this.angle+.07+((this.grip-10)*-.01))*this.length*1.26)
+                this.g.x = this.center.y +( Math.cos(this.angle)*this.length*1.26)
+                this.g.y = this.center.y +( Math.sin(this.angle)*this.length*1.26)
+            }
+
+            this.g.x = (this.lf.x+this.rf.x)/2
+            this.g.y = (this.lf.y+this.rf.y)/2
+            // this.grip%=17
+            // this.angle += .05
+            this.angle%=6.283
+            let point = new Point(this.center.x+(Math.cos(this.startangle)*5), this.center.y+(Math.sin(this.startangle)*5))
+            let point2 = new Point(this.center.x+(Math.cos(this.endangle)*5), this.center.y+(Math.sin(this.endangle)*5))
+
+            let link1 =new LineOP(this.center, point, "#00FF00", .5)
+            let link2 =new LineOP(this.center, point2, "#FF0000", .5)
+            for(let t = 0;t<this.links.length;t++){
+                this.links[t].draw()
+            }
+            for(let t = 0;t<this.nodes.length;t++){
+                this.nodes[t].draw()
+            }
+            link2.draw()
+            link1.draw()
+        }
+    }
+
     class Atom{
         constructor(x,y, h,w, color){
             this.dotwork = 0
@@ -2053,7 +2367,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
         runBelt(){
             let point = new Point(this.glob.x + this.xdir*2, this.glob.y + this.ydir*2)
-            let link = new LineOP(this.glob, point, "#FFFF00AA", 1)
+            let link = new LineOP(point, this.glob,  "#FFFF00AA", 1)
+            let belt = new Polygon(this.glob.x, this.glob.y, 1, "#FFFF00AA", 3, 0,0,Math.PI*.5,0)
+            belt.angle=(link.angle())
+
             if(this.belt == 1){
                 for(let t = 0;t<Math.min(this.dotwork, this.dots.length);t++){
                     if(this.body.isPointInside(this.dots[t])){
@@ -2213,7 +2530,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }
                 }
             }
-            link.draw()
+            if(this.belt==1){
+                belt.draw()
+            }
             this.cleandots()
         }
         cleandots(){
@@ -2537,12 +2856,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     let grid = new Grid(10)
     let candyman = new Player()
+    let menu = new UI()
     function main() {
         canvas_context.clearRect(-1290, -720, canvas.width*10, canvas.height*10)  // refreshes the image
         gamepadAPI.update() //checks for button presses/stick movement on the connected controller)
         // game code goes here
-
+        
         grid.draw()
         candyman.draw()
+        menu.draw()
     }
 })
