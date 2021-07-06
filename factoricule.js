@@ -1,5 +1,11 @@
 
 window.addEventListener('DOMContentLoaded', (event) => {
+    let menuon = 0
+    let tooltiptext = ''
+    let drawcheck = 0
+    let play = 1
+    let music = new Audio()
+    music.src = 'Factoricules.mp3'
     const gamepadAPI = {
         controller: {},
         turbo: true,
@@ -1048,6 +1054,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }, 17)
         document.addEventListener('keydown', (event) => {
             keysPressed[event.key] = true;
+            if(keysPressed['m'] || keysPressed[' ']){
+                if(menuon == 1){
+                    menuon = 0
+                }else{
+                    menuon = 1
+                }
+            }
         });
         document.addEventListener('keyup', (event) => {
             delete keysPressed[event.key];
@@ -1062,7 +1075,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             TIP_engine.body = TIP_engine
             // example usage: if(object.isPointInside(TIP_engine)){ take action }
 
-            if(keysPressed['m'] || keysPressed[' ']){
+            if(menuon == 1){
                 for(let t = 0;t<menu.blocks.length;t++){
                     if(menu.blocks[t].isPointInside(TIP_engine)){
                         menu.selector = t
@@ -1191,11 +1204,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         grid.blocks[t].ydir = 0
                         for(let k = 0;k<candyman.structures.length;k++){
                             if(candyman.structures[k].tile == grid.blocks[t]){
-                                if(candyman.structures[k].body.type > 3 && candyman.structures[k].body.type < 10){
-                                    grid.blocks[t].assembler = 0
-                                }
-                                if(candyman.structures[k].body.type > 9){
-                                    grid.blocks[t].compssembler = 0
+                                if(typeof candyman.structures[k].body != "undefined"){
+                                    if(candyman.structures[k].body.type > 3 && candyman.structures[k].body.type < 10){
+                                        grid.blocks[t].assembler = 0
+                                    }
+                                    if(candyman.structures[k].body.type > 9){
+                                        grid.blocks[t].compssembler = 0
+                                    }
                                 }
                                 candyman.structures.splice(k,1)
                                 candyman.selectedindex--
@@ -1325,6 +1340,71 @@ window.addEventListener('DOMContentLoaded', (event) => {
         window.removeEventListener('pointermove', track);
             // window.removeEventListener("pointermove", continued_stimuli);
         })
+        function tooltip(){
+            drawcheck = 0
+            
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].spigot > 0){
+                        if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                            if(grid.blocks[t].spigot == 1){
+                                tooltiptext = "Hydrogen Source"
+                            }
+                            if(grid.blocks[t].spigot == 2){
+                                tooltiptext = "Oxygen Source"
+                            }
+                            if(grid.blocks[t].spigot == 3){
+                                tooltiptext = "Carbon Source"
+                            }
+                            drawcheck = 1
+                        }
+                    }
+                }
+            if(menuon == 1){
+                for(let t = 0;t<menu.blocks.length;t++){
+                    if(menu.blocks[t].isPointInside(TIP_engine)){
+                        if(t==0){
+                            tooltiptext = "Mechanical Arm"
+                        }
+                        if(t==1){
+                            tooltiptext = "Belt Right"
+                        }
+                        if(t==2){
+                            tooltiptext = "Belt Left"
+                        }
+                        if(t==3){
+                            tooltiptext = "Belt Up"
+                        }
+                        if(t==4){
+                            tooltiptext = "Belt Down"
+                        }
+                        if(t==5){
+                            tooltiptext = "Ethylene Assembler"
+                        }
+                        if(t==6){
+                            tooltiptext = "Carbon Dioxide Assembler"
+                        }
+                        if(t==7){
+                            tooltiptext = "Water Assembler"
+                        }
+                        if(t==8){
+                            tooltiptext = "Glucose Assembler"
+                        }
+                        if(t==9){
+                            tooltiptext = "Citric Acid Assembler"
+                        }
+                        if(t==10){
+                            tooltiptext = "Ethanol Assembler"
+                        }
+                        if(t==11){
+                            tooltiptext = "Score Cup"
+                        }
+
+                        
+                        drawcheck = 1
+                    }
+                }
+            }
+        }
         function track(e){
             FLEX_engine = canvas.getBoundingClientRect();
             XS_engine = e.clientX - FLEX_engine.left;
@@ -1333,6 +1413,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             TIP_engine.x = XS_engine/3- canvas_context.getTransform().e/3
             TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
+
+
+            tooltip()
+
 
 
             if(menu.selector == 1){
@@ -1372,6 +1456,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
             }
                 
+
             if(keysPressed['n']){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
@@ -1418,6 +1503,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             TIP_engine.x = XS_engine/3- canvas_context.getTransform().e/3
             TIP_engine.y = YS_engine/3 - canvas_context.getTransform().f/3
             TIP_engine.body = TIP_engine
+
+
+            tooltip()
         }
     }
     function gamepad_control(object, speed = 1) { // basic control for objects using the controler
@@ -1516,7 +1604,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.selector = -1
         }
         draw(){
-            if(keysPressed['m'] || keysPressed[' ']){
+            if(menuon == 1){
                 this.toggle = 1
             }else{
                 this.toggle = 0
@@ -2388,7 +2476,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             //     continue
                             // }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.dots[t])){
-                                if(this.dots[t].type == 1){                                    
+                                if(this.dots[t].marked != 1 && this.dots[t].type == 1){                                    
                                     // console.log(grid.blocks[this.neighbors[k]].dots, grid.blocks[this.neighbors[k]].dots.length)
 
                                     this.hydrogen-=50
@@ -2401,7 +2489,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     // }
                                 this.dots[t].marked = 1
                                 }
-                                if(this.dots[t].type == 2){
+                                if(this.dots[t].marked != 1 && this.dots[t].type == 2){
                                     this.carbon-=50
                                     grid.blocks[this.neighbors[k]].carbon += 50
                                     grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
@@ -2411,7 +2499,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     this.dots[t].marked = 1
                                     // t--
                                 }
-                                if(this.dots[t].type == 3){
+                                if(this.dots[t].marked != 1 && this.dots[t].type == 3){
                                     this.nitrogen-=50
                                     grid.blocks[this.neighbors[k]].nitrogen += 50
                                     grid.blocks[this.neighbors[k]].dots.unshift(this.dots[t].copy())
@@ -2444,19 +2532,19 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             // }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.mols[t])){
 
-                                if(this.mols[t].type == 4){
+                               if(this.mols[t].marked != 1 && this.mols[t].type ==4){
                                     grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
                                     this.mols[t].marked = 1
                                 }
-                                if(this.mols[t].type == 5){
+                               if(this.mols[t].marked != 1 && this.mols[t].type ==5){
                                     grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
                                     this.mols[t].marked = 1
                                 }
-                                if(this.mols[t].type == 6){
+                               if(this.mols[t].marked != 1 && this.mols[t].type ==6){
                                     grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
                                     this.mols[t].marked = 1
                                 }
-                                if(this.mols[t].type == 1){                                    
+                               if(this.mols[t].marked != 1 && this.mols[t].type ==1){                                    
                                     // console.log(grid.blocks[this.neighbors[k]].mols, grid.blocks[this.neighbors[k]].mols.length)
 
                                     this.hydrogen-=50
@@ -2469,7 +2557,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     // }
                                 this.mols[t].marked = 1
                                 }
-                                if(this.mols[t].type == 2){
+                               if(this.mols[t].marked != 1 && this.mols[t].type ==2){
                                     this.carbon-=50
                                     grid.blocks[this.neighbors[k]].carbon += 50
                                     grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
@@ -2479,7 +2567,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                                     this.mols[t].marked = 1
                                     // t--
                                 }
-                                if(this.mols[t].type == 3){
+                               if(this.mols[t].marked != 1 && this.mols[t].type ==3){
                                     this.nitrogen-=50
                                     grid.blocks[this.neighbors[k]].nitrogen += 50
                                     grid.blocks[this.neighbors[k]].mols.unshift(this.mols[t].copy())
@@ -2511,15 +2599,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             //     continue
                             // }
                             if(grid.blocks[this.neighbors[k]].body.isPointInside(this.compmols[t])){
-                                if(this.compmols[t].type == 10){
+                               if(this.compmols[t].marked != 1 && this.compmols[t].type ==10){
                                     grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
                                     this.compmols[t].marked = 1
                                 }
-                                if(this.compmols[t].type == 11){
+                               if(this.compmols[t].marked != 1 && this.compmols[t].type ==11){
                                     grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
                                     this.compmols[t].marked = 1
                                 }
-                                if(this.compmols[t].type == 12){
+                               if(this.compmols[t].marked != 1 && this.compmols[t].type ==12){
                                     grid.blocks[this.neighbors[k]].compmols.unshift(this.compmols[t].copy())
                                     this.compmols[t].marked = 1
                                 }
@@ -2634,18 +2722,18 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 if(t > 20){
                     continue
                 }
-                if(this.dots[t].type == 1){
+                if(this.dots[t].marked != 1 && this.dots[t].type == 1){
 
                     this.dots[t].color= "#00FF00"
                 }
                 // if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
 
-                    if(this.dots[t].type == 2){
+                    if(this.dots[t].marked != 1 && this.dots[t].type == 2){
                     this.dots[t].color = "#FF0000"
                 }
                 // if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
 
-                    if(this.dots[t].type == 3){
+                    if(this.dots[t].marked != 1 && this.dots[t].type == 3){
                     this.dots[t].color = "#0000ff"
                 }
                 if(this.dots[t].gripped != 1 || this.belt == 1){
@@ -2691,18 +2779,18 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 // if(this.dots[t].gripped!=1 ){
 
                     // if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
-                        if(this.dots[t].type == 1){
+                        if(this.dots[t].marked != 1 && this.dots[t].type == 1){
 
                         this.dots[t].color= "#00FF00"
                     }
                     // if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
 
-                        if(this.dots[t].type == 2){
+                        if(this.dots[t].marked != 1 && this.dots[t].type == 2){
                         this.dots[t].color = "#FF0000"
                     }
                     // if(this.nitrogen > this.carbon && this.nitrogen > this.hydrogen){
 
-                        if(this.dots[t].type == 3){
+                        if(this.dots[t].marked != 1 && this.dots[t].type == 3){
                         this.dots[t].color = "#0000ff"
                     }
                 // }
@@ -2727,14 +2815,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 if(t > 20){
                     continue
                 }
-                if(this.mols[t].type == 1){
+               if(this.mols[t].marked != 1 && this.mols[t].type ==1){
 
                     this.mols[t].color= "#00FF00"
                 }
-                    if(this.mols[t].type == 2){
+                   if(this.mols[t].marked != 1 && this.mols[t].type ==2){
                     this.mols[t].color = "#FF0000"
                 }
-                    if(this.mols[t].type == 3){
+                   if(this.mols[t].marked != 1 && this.mols[t].type ==3){
                     this.mols[t].color = "#0000ff"
                 }
                 if(this.mols[t].gripped != 1 || this.belt == 1){
@@ -2776,7 +2864,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.mols[t].y += this.mols[t].ymom
                     }
                 }
-                        if(this.mols[t].type == 4){
+                       if(this.mols[t].marked != 1 && this.mols[t].type ==4){
                         this.mols[t].color= "#FFFF00"
                     }
                 }else if(this.belt == 1){
@@ -2837,7 +2925,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.compmols[t].y += this.compmols[t].ymom
                     }
                 }
-                        if(this.compmols[t].type == 10){
+                       if(this.compmols[t].marked != 1 && this.compmols[t].type ==10){
                         this.compmols[t].color= "#FFFFFF"
                     }
                 }else if(this.belt == 1){
@@ -2861,9 +2949,31 @@ window.addEventListener('DOMContentLoaded', (event) => {
         canvas_context.clearRect(-1290, -720, canvas.width*10, canvas.height*10)  // refreshes the image
         gamepadAPI.update() //checks for button presses/stick movement on the connected controller)
         // game code goes here
-        
+        if(keysPressed['p']){
+            play = 0
+        }
+        if(keysPressed[';']){
+            play = 1
+        }
+        if(play==1){
+            music.play()
+        }else{
+            music.pause()
+        }
         grid.draw()
         candyman.draw()
         menu.draw()
+        if(drawcheck == 1){
+            canvas_context.font = "5px arial"
+            canvas_context.fillStyle = "#DDDDDD"
+
+
+            let text = canvas_context.measureText(tooltiptext).width
+            let box = new Rectangle(TIP_engine.x-1, TIP_engine.y-4, text+3, 6, "#090909")
+            box.draw()
+            canvas_context.fillStyle = "#DDDDDD"
+            canvas_context.fillText(tooltiptext, TIP_engine.x+1, TIP_engine.y+1)
+            
+        }
     }
 })
