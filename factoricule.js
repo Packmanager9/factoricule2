@@ -265,6 +265,204 @@ window.addEventListener('DOMContentLoaded', (event) => {
             return false
         }
     }
+
+
+
+        
+    class Particle {
+        constructor(x, y, radius, color, xmom = 0, ymom = 0, friction = 1, reflect = 0, strokeWidth = 0, strokeColor = "transparent") {
+            this.x = x
+            this.y = y
+            this.age = 0
+            this.radius = radius
+            this.color = color
+            this.xmom = xmom
+            this.ymom = ymom
+            this.friction = friction
+            this.reflect = reflect
+            this.strokeWidth = strokeWidth
+            this.strokeColor = strokeColor
+            this.type =1
+        }
+        copy(){
+            let copy = new Particle(0,0,0,0)
+            copy.type = this.type
+            copy.radius = this.radius
+            copy.y = this.y
+            copy.x = this.x
+            copy.xmom = this.xmom
+            copy.ymom = this.ymom
+            copy.color = this.color
+            copy.last = this.last
+            copy.age = 0
+            // copy.gripped = this.gripped
+            // copy.marked = this.marked
+            return copy
+        }
+        draw() {
+
+            canvas_context.lineWidth = this.strokeWidth
+            if(this.type == 1){
+                this.color = "#00FF00"
+            }
+            if(this.type == 2){
+                this.color = "#FF0000"
+            }
+            if(this.type == 3){
+                this.color = "#0000FF"
+            }
+            canvas_context.strokeStyle = this.color
+            
+    // canvas_context.lineWidth = 5
+    canvas_context.strokeStyle = this.color
+    canvas_context.beginPath();
+    if (this.radius > 0) {
+        canvas_context.arc(this.x, this.y, this.radius*3, 0, (Math.PI * 2), true)
+        canvas_context.fillStyle = this.color
+
+
+        if (isFinite(this.x) && isFinite(this.y) && isFinite(this.radius)) {
+            var gard = canvas_context.createRadialGradient((this.x), (this.y), 0, (this.x), (this.y), Math.max(this.radius*2.3, 0))
+            this.string = this.color
+            if (typeof this.string !== "string") {
+                this.string = "#FF0000"
+            }
+            gard.addColorStop(0, this.string + `ff`)
+            gard.addColorStop(0.01, this.string + "FF")
+            gard.addColorStop(0.2, this.string + "FF")
+            gard.addColorStop(.5, this.string + "55")
+            gard.addColorStop(1, this.string + "00")
+            canvas_context.fillStyle = gard
+            canvas_context.fill()
+            // canvas_context.stroke();
+        }
+        }
+    }
+        move() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.x += this.xmom
+            this.y += this.ymom
+        }
+        unmove() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.x -= this.xmom
+            this.y -= this.ymom
+        }
+        frictiveMove() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.x += this.xmom
+            this.y += this.ymom
+            this.xmom *= this.friction
+            this.ymom *= this.friction
+        }
+        frictiveunMove() {
+            if (this.reflect == 1) {
+                if (this.x + this.radius > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y + this.radius > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.x - this.radius < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.y - this.radius < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.xmom /= this.friction
+            this.ymom /= this.friction
+            this.x -= this.xmom
+            this.y -= this.ymom
+        }
+        isPointInside(point) {
+            this.areaY = point.y - this.y
+            this.areaX = point.x - this.x
+            if (((this.areaX * this.areaX) + (this.areaY * this.areaY)) <= (this.radius * this.radius)) {
+                return true
+            }
+            return false
+        }
+        doesPerimeterTouch(point) {
+            this.areaY = point.y - this.y
+            this.areaX = point.x - this.x
+            if (((this.areaX * this.areaX) + (this.areaY * this.areaY)) <= ((this.radius + point.radius) * (this.radius + point.radius))) {
+                return true
+            }
+            return false
+        }
+    }
     class Circle {
         constructor(x, y, radius, color, xmom = 0, ymom = 0, friction = 1, reflect = 0, strokeWidth = 0, strokeColor = "transparent") {
             this.x = x
@@ -281,7 +479,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.type =1
         }
         copy(){
-            let copy = new Circle(0,0,0,0)
+            let copy = new Particle(0,0,0,0)
             copy.type = this.type
             copy.radius = this.radius
             copy.y = this.y
@@ -459,7 +657,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.type =1
         }
         copy(){
-            let copy = new Circle(0,0,0,0)
+            let copy = new Particle(0,0,0,0)
             copy.type = this.type
             copy.radius = this.radius
             copy.y = this.y
@@ -653,7 +851,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.reflect = reflect
             this.xmom = xmom
             this.ymom = ymom
-            this.body = new Circle(x, y, size - (size * .293), "transparent")
+            this.body = new Particle(x, y, size - (size * .293), "transparent")
             this.nodes = []
             this.angle = angle
             this.size = size
@@ -661,7 +859,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.angleIncrement = (Math.PI * 2) / sides
             this.sides = sides
             for (let t = 0; t < sides; t++) {
-                let node = new Circle(this.body.x + (this.size * (Math.cos(this.angle))), this.body.y + (this.size * (Math.sin(this.angle))), 0, "transparent")
+                let node = new Particle(this.body.x + (this.size * (Math.cos(this.angle))), this.body.y + (this.size * (Math.sin(this.angle))), 0, "transparent")
                 this.nodes.push(node)
                 this.angle += this.angleIncrement
             }
@@ -709,7 +907,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.angleIncrement = (Math.PI * 2) / this.sides
             this.body.radius = this.size - (this.size * .293)
             for (let t = 0; t < this.sides; t++) {
-                let node = new Circle(this.body.x + (this.size * (Math.cos(this.angle))), this.body.y + (this.size * (Math.sin(this.angle))), 0, "transparent")
+                let node = new Particle(this.body.x + (this.size * (Math.cos(this.angle))), this.body.y + (this.size * (Math.sin(this.angle))), 0, "transparent")
                 this.nodes.push(node)
                 this.angle += this.angleIncrement
             }
@@ -763,13 +961,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
     class Spring {
         constructor(x, y, radius, color, body = 0, length = 1, gravity = 0, width = 1) {
             if (body == 0) {
-                this.body = new Circle(x, y, radius, color)
-                this.anchor = new Circle(x, y, radius, color)
+                this.body = new Particle(x, y, radius, color)
+                this.anchor = new Particle(x, y, radius, color)
                 this.beam = new Line(this.body.x, this.body.y, this.anchor.x, this.anchor.y, "yellow", width)
                 this.length = length
             } else {
                 this.body = body
-                this.anchor = new Circle(x, y, radius, color)
+                this.anchor = new Particle(x, y, radius, color)
                 this.beam = new Line(this.body.x, this.body.y, this.anchor.x, this.anchor.y, "yellow", width)
                 this.length = length
             }
@@ -935,7 +1133,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     class Softbody { //buggy, spins in place
         constructor(x, y, radius, color, members = 10, memberLength = 5, force = 10, gravity = 0) {
             this.springs = []
-            this.pin = new Circle(x, y, radius, color)
+            this.pin = new Particle(x, y, radius, color)
             this.spring = new Spring(x, y, radius, color, this.pin, memberLength, gravity)
             this.springs.push(this.spring)
             for (let k = 0; k < members; k++) {
@@ -996,7 +1194,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     }
     class Observer {
         constructor(x, y, radius, color, range = 100, rays = 10, angle = (Math.PI * .125)) {
-            this.body = new Circle(x, y, radius, color)
+            this.body = new Particle(x, y, radius, color)
             this.color = color
             this.ray = []
             this.rayrange = range
@@ -1010,7 +1208,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.currentangle = this.gapangle / 2
             for (let k = 0; k < this.raymake; k++) {
                 this.currentangle += (this.gapangle / Math.ceil(this.raymake / 2))
-                let ray = new Circle(this.body.x, this.body.y, 1, "white", (((Math.cos(this.globalangle + this.currentangle)))), (((Math.sin(this.globalangle + this.currentangle)))))
+                let ray = new Particle(this.body.x, this.body.y, 1, "white", (((Math.cos(this.globalangle + this.currentangle)))), (((Math.sin(this.globalangle + this.currentangle)))))
                 ray.collided = 0
                 ray.lifespan = this.rayrange - 1
                 this.ray.push(ray)
@@ -1583,7 +1781,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             let limit = granularity
             let shape_array = []
             for (let t = 0; t < limit; t++) {
-                let circ = new Circle((from.x * (t / limit)) + (to.x * ((limit - t) / limit)), (from.y * (t / limit)) + (to.y * ((limit - t) / limit)), radius, "red")
+                let circ = new Particle((from.x * (t / limit)) + (to.x * ((limit - t) / limit)), (from.y * (t / limit)) + (to.y * ((limit - t) / limit)), radius, "red")
                 shape_array.push(circ)
             }
             return (new Shape(shape_array))
@@ -1678,7 +1876,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.sour  = 0
             this.water  = 0
             this.fizz  = 0
-            this.body = new Circle(100,100, 4, "#FFFFFF")
+            this.body = new Particle(100,100, 4, "#FFFFFF")
             this.body.type = 28
             this.tile = grid.blocks[Math.round(grid.w*11.16)]
             this.structures = []
@@ -1875,7 +2073,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         if(this.tile.carbon >= 100){
                             this.tile.carbon-=100
                             this.tile.hydrogen-=200
-                            let acetyl = new Circle(this.tile.glob.x,this.tile.glob.y, 1.5, "#FFFF00", Math.random()-.5,Math.random()-.5)
+                            let acetyl = new Particle(this.tile.glob.x,this.tile.glob.y, 1.5, "#FFFF00", Math.random()-.5,Math.random()-.5)
                             acetyl.type = 4
                             this.tile.mols.push(acetyl)
                         }
@@ -1886,7 +2084,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         if(this.tile.carbon >= 50){
                             this.tile.nitrogen-=100
                             this.tile.carbon-=50
-                            let co2 = new Circle(this.tile.glob.x,this.tile.glob.y, 1.3, "#FF00FF", Math.random()-.5,Math.random()-.5)
+                            let co2 = new Particle(this.tile.glob.x,this.tile.glob.y, 1.3, "#FF00FF", Math.random()-.5,Math.random()-.5)
                             co2.type = 5
                             this.tile.mols.push(co2)
                         }
@@ -1898,7 +2096,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         if(this.tile.hydrogen >= 100){
                             this.tile.nitrogen-=50
                             this.tile.hydrogen-=100
-                            let h20 = new Circle(this.tile.glob.x,this.tile.glob.y, 1.1, "#00FFFF", Math.random()-.5,Math.random()-.5)
+                            let h20 = new Particle(this.tile.glob.x,this.tile.glob.y, 1.1, "#00FFFF", Math.random()-.5,Math.random()-.5)
                             h20.type = 6
                             this.tile.mols.push(h20)
                         }
@@ -1945,7 +2143,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             this.tile.mols[t].marked=1
                         }
                     }
-                            let glucose = new Circle(this.tile.glob.x,this.tile.glob.y, 1.9, "#FFFFFF", Math.random()-.5,Math.random()-.5)
+                            let glucose = new Particle(this.tile.glob.x,this.tile.glob.y, 1.9, "#FFFFFF", Math.random()-.5,Math.random()-.5)
                             glucose.type = 10
                             this.tile.compmols.push(glucose)
                         }
@@ -1974,7 +2172,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             this.tile.mols[t].marked=1
                         }
                     }
-                            let citricacid = new Circle(this.tile.glob.x,this.tile.glob.y, 1.8, "#FFAA00", Math.random()-.5,Math.random()-.5)
+                            let citricacid = new Particle(this.tile.glob.x,this.tile.glob.y, 1.8, "#FFAA00", Math.random()-.5,Math.random()-.5)
                             citricacid.type = 11
                             this.tile.compmols.push(citricacid)
                         }
@@ -2003,7 +2201,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             this.tile.mols[t].marked=1
                         }
                     }
-                            let citricacid = new Circle(this.tile.glob.x,this.tile.glob.y, 1.7, "#AAFF00", Math.random()-.5,Math.random()-.5)
+                            let citricacid = new Particle(this.tile.glob.x,this.tile.glob.y, 1.7, "#AAFF00", Math.random()-.5,Math.random()-.5)
                             citricacid.type = 12
                             this.tile.compmols.push(citricacid)
                         }
@@ -2065,14 +2263,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.nodes = []
             this.angle = 1
             this.subind = Math.floor(Math.random()*1280)
-            this.center = new Circle(this.tile.glob.x, this.tile.glob.y, 2, "#FFFFFF")
-            this.crotch = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.center = new Particle(this.tile.glob.x, this.tile.glob.y, 2, "#FFFFFF")
+            this.crotch = new Particle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
             
-            this.lp = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
-            this.rp = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
-            this.lf = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
-            this.rf = new Circle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
-            this.g = new Circle(this.tile.glob.x, this.tile.glob.y, 2, "#FFFFFF")
+            this.lp = new Particle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.rp = new Particle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.lf = new Particle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.rf = new Particle(this.tile.glob.x, this.tile.glob.y, .7, "#FFFFFF")
+            this.g = new Particle(this.tile.glob.x, this.tile.glob.y, 2, "#FFFFFF")
             this.nodes.push(this.center)
             this.nodes.push(this.crotch)
             this.nodes.push(this.lp)
@@ -2080,7 +2278,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.nodes.push(this.lf)
             this.nodes.push(this.rf)
             this.length = 24
-            this.particle = new Circle(-10000,-10000, 1, "#FFFFFF")
+            this.particle = new Particle(-10000,-10000, 1, "#FFFFFF")
             this.particle.type = 0
             this.links = []
             let link = new LineOP(this.center, this.crotch, "#AAAAAA", .5)
@@ -2157,7 +2355,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     } 
                     this.particle.marked = 1
                     // this.particle.type = 0
-                    this.particle = new Circle(0,0,0,"transparent")
+                    this.particle = new Particle(0,0,0,"transparent")
                     this.particle.type = 0
 
                     grid.blocks[this.subind].cleandots()
@@ -2225,6 +2423,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.startangle = Math.PI*2
                     }
                 }
+                if(keysPressed['u']){
+                    this.length-=.25
+                    if(this.length<.5){
+                        this.length = .5
+                    }
+                }
+                if(keysPressed['p']){
+                    this.length+=.25
+                }
                 if(keysPressed['j']){
                     this.endangle-=.051
                     if(this.endangle<0){
@@ -2272,13 +2479,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.g.y = (this.lf.y+this.rf.y)/2
             // this.grip%=17
             this.angle += .05
-            this.angle%=6.283
+            this.angle%=(6.283+.07)
 
             this.particle.x = (this.lf.x+this.rf.x)/2
             this.particle.y = (this.lf.y+this.rf.y)/2
-            if(this.particle.type != 0){
-                this.particle.draw()
-            }
             if(this.angle > this.startangle && this.angle< this.startangle+.07){
                 this.drop()
                 this.grip = 0
@@ -2304,6 +2508,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
             link2.draw()
             link1.draw()
+
+            if(this.particle.type != 0){
+                this.particle.draw()
+            }
         }
     }
 
@@ -2318,14 +2526,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.nodes = []
             this.angle = 1
             this.subind = Math.floor(Math.random()*1280)
-            this.center = new Circle(this.tile.x + 5, this.tile.y + 5, .52, "#FFFFFF")
-            this.crotch = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.center = new Particle(this.tile.x + 5, this.tile.y + 5, .52, "#FFFFFF")
+            this.crotch = new Particle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
             
-            this.lp = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
-            this.rp = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
-            this.lf = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
-            this.rf = new Circle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
-            this.g = new Circle(this.tile.x + 5, this.tile.y + 5, .52, "#FFFFFF")
+            this.lp = new Particle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.rp = new Particle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.lf = new Particle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.rf = new Particle(this.tile.x + 5, this.tile.y + 5, .17, "#FFFFFF")
+            this.g = new Particle(this.tile.x + 5, this.tile.y + 5, .52, "#FFFFFF")
             this.nodes.push(this.center)
             this.nodes.push(this.crotch)
             this.nodes.push(this.lp)
@@ -2333,7 +2541,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.nodes.push(this.lf)
             this.nodes.push(this.rf)
             this.length = 3
-            this.particle = new Circle(-10000,-10000, 1, "#FFFFFF")
+            this.particle = new Particle(-10000,-10000, 1, "#FFFFFF")
             this.particle.type = 0
             this.links = []
             let link = new LineOP(this.center, this.crotch, "#AAAAAA", .5)
@@ -2403,6 +2611,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     class Atom{
         constructor(x,y, h,w, color){
+            this.spawntimer = 0
             this.dotwork = 0
             this.dotworkx = 0
             this.neighbors = []
@@ -2410,8 +2619,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.mols = []
             this.compmols = []
             this.body = new Rectangle(x,y,w,h,color)
-            this.glob = new Circle(x+w*.5,y+w*.5,w*.5,getRandomColor())
-            this.mglob = new Circle(x+w*.5,y+w*.5,w*.05,getRandomColor())
+            this.glob = new Particle(x+w*.5,y+w*.5,w*.5,getRandomColor())
+            this.mglob = new Particle(x+w*.5,y+w*.5,w*.05,getRandomColor())
             this.type = 0
             this.belt = 0
             this.xdir = 0
@@ -2646,7 +2855,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         getAtoms(){
 
             for(let t = 0;t<Math.ceil((this.hydrogen+this.nitrogen+this.carbon)/50);t++){
-                let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                let atom = new Particle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
                 atom.type = 1
                 if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
                     atom.type = 1
@@ -2682,32 +2891,53 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.dotwork =Math.ceil((this.hydrogen+this.nitrogen+this.carbon)/50)
             // console.log(this.hydrogen, this.carbon, this.nitrogen)
                 while(this.dotwork > this.dots.length){
-                    let atom = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
-                    atom.type = 1
+                    let atom = new Particle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+
+                    if(this.hydrogen > this.carbon && this.hydrogen > this.nitrogen){
+                        atom.type = 1
+                    }
+                    if(this.carbon > this.hydrogen && this.carbon > this.nitrogen){
+                        atom.type = 2
+                    }
+                    if(this.nitrogen > this.hydrogen && this.nitrogen > this.carbon){
+                        atom.type = 3
+                    }
                     this.dots.push(atom)
                 }
 
-                if(Math.random()<.005){
+                // if(Math.random()<.005){
+                    this.spawntimer++
+
+                if(this.spawntimer == 125){
+                    if(this.spigot == 1){
                     if(this.hydrogen<300){
-                        if(this.spigot == 1){
+                            console.log(this.hydrogen)
                             this.hydrogen+=50
-                            let hydro = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                            let hydro = new Particle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
                             hydro.type = 1
                             this.dots.unshift(hydro)
                         }
+                        this.spawntimer = 0
                     }
+                }
+                if(this.spawntimer == 155){
+                    if(this.spigot == 2){
+                        this.spawntimer = 0
                     if(this.nitrogen<250){
-                        if(this.spigot == 2){
                             this.nitrogen+=50
-                            let nitrogen = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                            let nitrogen = new Particle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
                             nitrogen.type = 3
                             this.dots.unshift(nitrogen)
                         }
                     }
+                }
+
+                if(this.spawntimer == 170){
+                    if(this.spigot == 3){
+                        this.spawntimer = 0
                     if(this.carbon<200){
-                        if(this.spigot == 3){
                             this.carbon+=50
-                            let carbon = new Circle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
+                            let carbon = new Particle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
                             carbon.type = 2
                             this.dots.unshift(carbon)
                         }
@@ -2719,7 +2949,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
             for(let t = 0;t<Math.min(this.dotwork, this.dots.length);t++){
 
-                if(t > 20){
+                if(t > 16){
                     continue
                 }
                 if(this.dots[t].marked != 1 && this.dots[t].type == 1){
@@ -2812,7 +3042,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         molecularize(){
 
             for(let t = 0;t<this.mols.length;t++){
-                if(t > 20){
+                if(t > 16){
                     continue
                 }
                if(this.mols[t].marked != 1 && this.mols[t].type ==1){
@@ -2883,7 +3113,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
             for(let t = 0;t<this.compmols.length;t++){
 
-                if(t > 20){
+                if(t > 16){
                     continue
                 }
                 if(this.compmols[t].gripped != 1 || this.belt == 1){
@@ -2949,7 +3179,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         canvas_context.clearRect(-1290, -720, canvas.width*10, canvas.height*10)  // refreshes the image
         gamepadAPI.update() //checks for button presses/stick movement on the connected controller)
         // game code goes here
-        if(keysPressed['p']){
+        if(keysPressed['.']){
             play = 0
         }
         if(keysPressed[';']){
