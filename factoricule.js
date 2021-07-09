@@ -704,6 +704,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.type == 21){
                 this.color = getRandomLightColor()
             }
+            if(this.type == 109){
+                this.color = "#FF1096"
+            }
             if(this.type == 28){
                 this.color = "#777777"
             }
@@ -1373,13 +1376,52 @@ window.addEventListener('DOMContentLoaded', (event) => {
                            candyman.structures.push(glucbase)
                            candyman.selectedindex++
                         }
+                        if(menu.selector == 12){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    for(let j = 0;j<grid.blocks[t].dots.length;j++){
+                                        if(grid.blocks[t].body.isPointInside(grid.blocks[t].dots[j])){
+                                            grid.blocks[t].dots[j].gripped = 0
+                                        }
+                                    }
+                                    for(let j = 0;j<grid.blocks[t].mols.length;j++){
+                                        if(grid.blocks[t].body.isPointInside(grid.blocks[t].mols[j])){
+                                            grid.blocks[t].mols[j].gripped = 0
+                                        }
+                                    }
+                                    for(let j = 0;j<grid.blocks[t].compmols.length;j++){
+                                        if(grid.blocks[t].body.isPointInside(grid.blocks[t].compmols[j])){
+                                            grid.blocks[t].compmols[j].gripped = 0
+                                        }
+                                    }
+                                    grid.blocks[t].belt = 0
+                                    grid.blocks[t].xdir = 0
+                                    grid.blocks[t].ydir = 0
+                                    for(let k = 0;k<candyman.structures.length;k++){
+                                        if(candyman.structures[k].tile == grid.blocks[t]){
+                                            if(typeof candyman.structures[k].body != "undefined"){
+                                                if(candyman.structures[k].body.type > 3 && candyman.structures[k].body.type < 10){
+                                                    grid.blocks[t].assembler = 0
+                                                }
+                                                if(candyman.structures[k].body.type > 9){
+                                                    grid.blocks[t].compssembler = 0
+                                                }
+                                            }
+                                            candyman.structures.splice(k,1)
+                                            candyman.selectedindex--
+                                            break
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
             }else{
 
 
-            if(keysPressed['z']){
+            if(keysPressed['z'] ){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
                         for(let j = 0;j<grid.blocks[t].dots.length;j++){
@@ -1595,6 +1637,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         }
                         if(t==11){
                             tooltiptext = "Score Cup"
+                        }
+                        if(t==12){
+                            tooltiptext = "Delete Structure"
                         }
 
                         
@@ -1848,6 +1893,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }else if(t == 11){
                     block.detail = new Circles(block.x+5, block.y+5, 4)
                     block.detail.type = 21
+                }else if(t == 12){
+                    block.detail = new Circles(block.x+5, block.y+5,2)
+                    block.detail.type = 109
                 }else{
                     block.detail = new Circles(block.x+5, block.y+5, 5)
                     block.detail.type = 0
@@ -3207,3 +3255,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
     }
 })
+
+
+
+
