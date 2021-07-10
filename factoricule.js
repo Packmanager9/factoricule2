@@ -1252,7 +1252,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         canvas.style.background = style
         window.setInterval(function () {
             main()
-        }, 17)
+        }, 33)
         document.addEventListener('keydown', (event) => {
             keysPressed[event.key] = true;
             if(keysPressed['m'] || keysPressed[' ']){
@@ -1462,7 +1462,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
 
 
-            if(keysPressed['q']){
+            // if(keysPressed['q']){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
 
@@ -1509,7 +1509,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         }
                     }
                 }
-            }
+            // }
             if(keysPressed['n']){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
@@ -1860,46 +1860,104 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
             this.blocks = []
             for(let t = 0;t<25;t++){
-                let block = new Rectangle(5+this.body.x+((t%5)*10),5+this.body.y+(Math.floor(t/5)*10), 10,10, "#333333")
-                block.detail = {}
+                let block = new Rectangle(5+this.body.x+((t%5)*10),5+this.body.y+(Math.floor(t/5)*10), 10,10, "#555555")
+                // block.detail = {}
+                block.detail = []
                 if(t == 0){
-                    block.detail = new ArmIcon(block)
+                    let detail = new ArmIcon(block)
+                    block.detail.push(detail)
                 }else if(t == 1){
-                    block.detail = new Polygon(block.x+5+1.5, block.y+5, 1, "yellow", 3, 0,0,0,0)
+
+                    let detail = new Polygon(block.x+5+1.5, block.y+5, 1, "yellow", 3, 0,0,0,0)
+                    block.detail.push(detail)
+
                 }else if(t == 2){
-                    block.detail = new Polygon(block.x+5-1.5, block.y+5, 1, "yellow", 3, 0,0,Math.PI,0)
+                    let detail = new Polygon(block.x+5-1.5, block.y+5, 1, "yellow", 3, 0,0,Math.PI,0)
+                    block.detail.push(detail)
                 }else if(t == 3){
-                    block.detail = new Polygon(block.x+5, block.y+3.5, 1, "yellow", 3, 0,0,Math.PI*1.5,0)
+                    let detail = new Polygon(block.x+5, block.y+3.5, 1, "yellow", 3, 0,0,Math.PI*1.5,0)
+                    block.detail.push(detail)
                 }else if(t == 4){
-                    block.detail = new Polygon(block.x+5, block.y+6.5, 1, "yellow", 3, 0,0,Math.PI*.5,0)
+                    let detail = new Polygon(block.x+5, block.y+6.5, 1, "yellow", 3, 0,0,Math.PI*.5,0)
+                    block.detail.push(detail)
                 }else if(t == 5){
-                    block.detail = new Circles(block.x+5, block.y+5, 4)
-                    block.detail.type = 4
+                    let detail = new Circles(block.x+5, block.y+5, 4)
+                    detail.type = 4
+                    block.detail.push(detail)
+                    let hydro = new Particle(block.x+7, block.y+5, .7, "#00ff00", Math.random()-.5,Math.random()-.5)
+                    hydro.type = 1
+                    let carbon = new Particle(block.x+3, block.y+5, .7, "#ff0000", Math.random()-.5,Math.random()-.5)
+                    carbon.type = 2
+                    block.detail.push(carbon)
+                    block.detail.push(hydro)
+
                 }else if(t == 6){
-                    block.detail = new Circles(block.x+5, block.y+5, 4)
-                    block.detail.type = 5
+                    let detail = new Circles(block.x+5, block.y+5, 4)
+                    detail.type = 5
+                    block.detail.push(detail)
+                    let hydro = new Particle(block.x+7, block.y+5, .7, "#00ff00", Math.random()-.5,Math.random()-.5)
+                    hydro.type = 3
+                    let carbon = new Particle(block.x+3, block.y+5, .7, "#ff0000", Math.random()-.5,Math.random()-.5)
+                    carbon.type = 2
+                    block.detail.push(carbon)
+                    block.detail.push(hydro)
                 }else if(t == 7){
-                    block.detail = new Circles(block.x+5, block.y+5, 4)
-                    block.detail.type = 6
+                    let detail = new Circles(block.x+5, block.y+5, 4)
+                    detail.type = 6
+                    block.detail.push(detail)
+
+                    let hydro = new Particle(block.x+7, block.y+5, .7, "#00ff00", Math.random()-.5,Math.random()-.5)
+                    hydro.type = 1
+                    let carbon = new Particle(block.x+3, block.y+5, .7, "#ff0000", Math.random()-.5,Math.random()-.5)
+                    carbon.type = 3
+                    block.detail.push(carbon)
+                    block.detail.push(hydro)
                 }else if(t == 8){
-                    block.detail = new Circles(block.x+5, block.y+5, 4)
-                    block.detail.type = 10
+                    let detail = new Circles(block.x+5, block.y+5, 4)
+                    detail.type = 10
+                    block.detail.push(detail)
+
+                    let hydro = new Particle(block.x+7, block.y+5, 1.4, "#FFFF00", Math.random()-.5,Math.random()-.5)
+                    hydro.type = 4
+                    let carbon = new Particle(block.x+3, block.y+5, 1.2, "#FF00FF", Math.random()-.5,Math.random()-.5)
+                    carbon.type = 6
+                    block.detail.push(carbon)
+                    block.detail.push(hydro)
                 }else if(t == 9){
-                    block.detail = new Circles(block.x+5, block.y+5, 4)
-                    block.detail.type = 11
+                    let detail = new Circles(block.x+5, block.y+5, 4)
+                    detail.type = 11
+                    block.detail.push(detail)
+                    
+                    let hydro = new Particle(block.x+7, block.y+5, 1.4, "#00FFFF", Math.random()-.5,Math.random()-.5)
+                    hydro.type = 5
+                    let carbon = new Particle(block.x+3, block.y+5, 1.2, "#FF00FF", Math.random()-.5,Math.random()-.5)
+                    carbon.type = 6
+                    block.detail.push(carbon)
+                    block.detail.push(hydro)
                 }else if(t == 10){
-                    block.detail = new Circles(block.x+5, block.y+5, 4)
-                    block.detail.type = 12
+                    let detail = new Circles(block.x+5, block.y+5, 4)
+                    detail.type = 12
+                    block.detail.push(detail)
+
+                    let hydro = new Particle(block.x+7, block.y+5, 1.4, "#FFFF00", Math.random()-.5,Math.random()-.5)
+                    hydro.type = 4
+                    let carbon = new Particle(block.x+3, block.y+5, 1.2, "#00FFFF", Math.random()-.5,Math.random()-.5)
+                    carbon.type = 5
+                    block.detail.push(carbon)
+                    block.detail.push(hydro)
                 }else if(t == 11){
-                    block.detail = new Circles(block.x+5, block.y+5, 4)
-                    block.detail.type = 21
+                    let detail = new Circles(block.x+5, block.y+5, 4)
+                    detail.type = 21
+                    block.detail.push(detail)
                 }else if(t == 12){
-                    block.detail = new Circles(block.x+5, block.y+5,2)
-                    block.detail.type = 109
+                    let detail = new Circles(block.x+5, block.y+5,2)
+                    detail.type = 109
+                    block.detail.push(detail)
                 }else{
-                    block.detail = new Circles(block.x+5, block.y+5, 5)
-                    block.detail.type = 0
-                    block.detail.color = "transparent"
+                    let detail = new Circles(block.x+5, block.y+5, 5)
+                    detail.type = 0
+                    detail.color = "transparent"
+                    block.detail.push(detail)
                 }
                 this.blocks.push(block)
             }
@@ -1908,7 +1966,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     this.blocks[t].color = "#AAAAAA"
                 }
                 this.blocks[t].draw()
-                this.blocks[t].detail.draw()
+                for(let d = 0;d<this.blocks[t].detail.length;d++){
+                    this.blocks[t].detail[d].draw()
+                }
             }
 
 
@@ -1929,6 +1989,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.tile = grid.blocks[Math.round(grid.w*11.16)]
             this.structures = []
             this.selectedindex = -1
+            this.mod = 0
         }
         draw(){
 
@@ -1946,6 +2007,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.body.draw()
             this.dispx = this.body.x
             this.dispy = this.body.y
+            this.mod++
             if(keysPressed['w']){
                 this.body.y -= this.tile.body.height
             }
@@ -2719,8 +2781,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if(this.belt == 1){
                 for(let t = 0;t<Math.min(this.dotwork, this.dots.length);t++){
                     if(this.body.isPointInside(this.dots[t])){
-                    this.dots[t].x+=.11*this.xdir
-                    this.dots[t].y+=.11*this.ydir
+                    this.dots[t].x+=.17*this.xdir
+                    this.dots[t].y+=.17*this.ydir
                     this.dots[t].gripped = 1
                     // this.dots[t].last = grid.blocks.indexOf(this)
                     }
@@ -2959,7 +3021,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 if(this.spawntimer == 125){
                     if(this.spigot == 1){
                     if(this.hydrogen<300){
-                            console.log(this.hydrogen)
+                            // console.log(this.hydrogen)
                             this.hydrogen+=50
                             let hydro = new Particle(this.glob.x, this.glob.y, .5, "#FFFFFF", Math.random()-.5, Math.random()-.5)
                             hydro.type = 1
