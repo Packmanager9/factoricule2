@@ -711,7 +711,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 this.color = "#777777"
             }
             canvas_context.strokeStyle = this.color
-            canvas_context.stokeWidth = 1
+            canvas_context.lineWidth = .70712
             canvas_context.beginPath();
             if (this.radius > 0) {
                 canvas_context.arc(this.x, this.y, this.radius, 0, (Math.PI * 2), true)
@@ -847,6 +847,88 @@ window.addEventListener('DOMContentLoaded', (event) => {
             return false
         }
     } class Polygon {
+        constructor(x, y, size, color, sides = 3, xmom = 0, ymom = 0, angle = 0, reflect = 0) {
+            if (sides < 2) {
+                sides = 2
+            }
+            this.reflect = reflect
+            this.xmom = xmom
+            this.ymom = ymom
+            this.body = new Particle(x, y, size - (size * .293), "transparent")
+            this.nodes = []
+            this.angle = angle
+            this.size = size
+            this.color = color
+            this.angleIncrement = (Math.PI * 2) / sides
+            this.sides = sides
+            for (let t = 0; t < sides; t++) {
+                let node = new Particle(this.body.x + (this.size * (Math.cos(this.angle))), this.body.y + (this.size * (Math.sin(this.angle))), 0, "transparent")
+                this.nodes.push(node)
+                this.angle += this.angleIncrement
+            }
+        }
+        isPointInside(point) { // rough approximation
+            this.body.radius = this.size - (this.size * .293)
+            if (this.sides <= 2) {
+                return false
+            }
+            this.areaY = point.y - this.body.y
+            this.areaX = point.x - this.body.x
+            if (((this.areaX * this.areaX) + (this.areaY * this.areaY)) <= (this.body.radius * this.body.radius)) {
+                return true
+            }
+            return false
+        }
+        move() {
+            if (this.reflect == 1) {
+                if (this.body.x > canvas.width) {
+                    if (this.xmom > 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.body.y > canvas.height) {
+                    if (this.ymom > 0) {
+                        this.ymom *= -1
+                    }
+                }
+                if (this.body.x < 0) {
+                    if (this.xmom < 0) {
+                        this.xmom *= -1
+                    }
+                }
+                if (this.body.y < 0) {
+                    if (this.ymom < 0) {
+                        this.ymom *= -1
+                    }
+                }
+            }
+            this.body.x += this.xmom
+            this.body.y += this.ymom
+        }
+        draw() {
+            this.nodes = []
+            this.angleIncrement = (Math.PI * 2) / this.sides
+            this.body.radius = this.size - (this.size * .293)
+            for (let t = 0; t < this.sides; t++) {
+                let node = new Particle(this.body.x + (this.size * (Math.cos(this.angle))), this.body.y + (this.size * (Math.sin(this.angle))), 0, "transparent")
+                this.nodes.push(node)
+                this.angle += this.angleIncrement
+            }
+            canvas_context.strokeStyle = this.color
+            canvas_context.fillStyle = this.color
+            canvas_context.lineWidth = 0
+            // canvas_context.beginPath()
+            canvas_context.moveTo(this.nodes[0].x, this.nodes[0].y)
+            for (let t = 1; t < this.nodes.length; t++) {
+                canvas_context.lineTo(this.nodes[t].x, this.nodes[t].y)
+            }
+            canvas_context.lineTo(this.nodes[0].x, this.nodes[0].y)
+            // canvas_context.fill()
+            canvas_context.lineWidth = .5
+            // canvas_context.stroke()
+            // canvas_context.closePath()
+        }
+    }class PolygonClean {
         constructor(x, y, size, color, sides = 3, xmom = 0, ymom = 0, angle = 0, reflect = 0) {
             if (sides < 2) {
                 sides = 2
@@ -1868,17 +1950,17 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     block.detail.push(detail)
                 }else if(t == 1){
 
-                    let detail = new Polygon(block.x+5+1.5, block.y+5, 1, "yellow", 3, 0,0,0,0)
+                    let detail = new PolygonClean(block.x+5+1.5, block.y+5, 1, "yellow", 3, 0,0,0,0)
                     block.detail.push(detail)
 
                 }else if(t == 2){
-                    let detail = new Polygon(block.x+5-1.5, block.y+5, 1, "yellow", 3, 0,0,Math.PI,0)
+                    let detail = new PolygonClean(block.x+5-1.5, block.y+5, 1, "yellow", 3, 0,0,Math.PI,0)
                     block.detail.push(detail)
                 }else if(t == 3){
-                    let detail = new Polygon(block.x+5, block.y+3.5, 1, "yellow", 3, 0,0,Math.PI*1.5,0)
+                    let detail = new PolygonClean(block.x+5, block.y+3.5, 1, "yellow", 3, 0,0,Math.PI*1.5,0)
                     block.detail.push(detail)
                 }else if(t == 4){
-                    let detail = new Polygon(block.x+5, block.y+6.5, 1, "yellow", 3, 0,0,Math.PI*.5,0)
+                    let detail = new PolygonClean(block.x+5, block.y+6.5, 1, "yellow", 3, 0,0,Math.PI*.5,0)
                     block.detail.push(detail)
                 }else if(t == 5){
                     let detail = new Circles(block.x+5, block.y+5, 4)
@@ -2141,9 +2223,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
             for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].draw()
             }
+
+            canvas_context.beginPath()
             for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].runBelt()
             }
+            canvas_context.stroke()
+            canvas_context.closePath()
+
             for(let t = 0;t<this.blocks.length;t++){
                 this.blocks[t].cleandots()
             }
