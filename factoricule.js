@@ -3,6 +3,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     let menuon = 0
     let tooltiptext = ''
     let drawcheck = 0
+    let pointeron = 0
     let play = 1
     let music = new Audio()
     music.src = 'Factoricules.mp3'
@@ -1349,6 +1350,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
             delete keysPressed[event.key];
         });
         window.addEventListener('pointerdown', e => {
+            pointeron = 1
             FLEX_engine = canvas.getBoundingClientRect();
             XS_engine = e.clientX - FLEX_engine.left;
             YS_engine = e.clientY - FLEX_engine.top;
@@ -1364,6 +1366,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         menu.selector = t
                         return
                     }
+                }
+
+                if(keysPressed['z']){
+                    menu.selector = 12
                 }
 
 
@@ -1560,7 +1566,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                             candyman.structures.push(h2base)
                             candyman.selectedindex++
                         }
-                        if(keysPressed['o']){
+                        if(keysPressed['t']) {
                            let co2base = new Assembler(grid.blocks[t])
                            co2base.body.type = 5
                            candyman.structures.push(co2base)
@@ -1637,9 +1643,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
             }
 
+            
 
             }
 
+            if(keysPressed['z']){
+                menu.selector = 12
+            }
             // this.belt = 1
             // if(Math.random()<.3){
             //     this.xdir = 1
@@ -1659,6 +1669,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
         window.addEventListener('pointermove', continued_stimuli);
 
         window.addEventListener('pointerup', e => {
+
+            pointeron = 0
         window.removeEventListener('pointermove', track);
             // window.removeEventListener("pointermove", continued_stimuli);
         })
@@ -1815,6 +1827,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         grid.blocks[t].belt = 1
                         grid.blocks[t].xdir = 0
                         grid.blocks[t].ydir = 1
+                    }
+                }
+            }
+            if(keysPressed['z'] || menu.selector == 12){
+                for(let t = 0;t<grid.blocks.length;t++){
+                    if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                        grid.blocks[t].belt = 0
+                        grid.blocks[t].xdir = 0
+                        grid.blocks[t].ydir = 0
                     }
                 }
             }
@@ -2092,15 +2113,19 @@ window.addEventListener('DOMContentLoaded', (event) => {
             this.mod++
             if(keysPressed['w']){
                 this.body.y -= this.tile.body.height
+                TIP_engine.y -= this.tile.body.height
             }
             if(keysPressed['a']){
                 this.body.x -= this.tile.body.width
+                TIP_engine.x -= this.tile.body.width
             }
             if(keysPressed['s']){
                 this.body.y += this.tile.body.height
+                TIP_engine.y += this.tile.body.height
             }
             if(keysPressed['d']){
                 this.body.x += this.tile.body.width
+                TIP_engine.x += this.tile.body.width
             }
             
             let wet = 0
@@ -2108,6 +2133,94 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 if(grid.blocks[this.tile.neighbors[t]].mglob.isPointInside(this.body)){
                     this.tile = grid.blocks[this.tile.neighbors[t]]
                     wet = 1
+
+                    if(pointeron == 1){
+
+                        if(menu.selector == 1){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = 1
+                                    grid.blocks[t].ydir = 0
+                                }
+                            }
+                        }
+                        if(menu.selector == 2){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = -1
+                                    grid.blocks[t].ydir = 0
+                                }
+                            }
+                        }
+                        if(menu.selector == 3){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = 0
+                                    grid.blocks[t].ydir = -1
+                                }
+                            }
+                        }
+                        if(menu.selector == 4){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = 0
+                                    grid.blocks[t].ydir = 1
+                                }
+                            }
+                        }
+                            
+            
+                        if(keysPressed['n']){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = 1
+                                    grid.blocks[t].ydir = 0
+                                }
+                            }
+                        }
+                        if(keysPressed['v']){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = -1
+                                    grid.blocks[t].ydir = 0
+                                }
+                            }
+                        }
+                        if(keysPressed['g']){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = 0
+                                    grid.blocks[t].ydir = -1
+                                }
+                            }
+                        }
+                        if(keysPressed['b']){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 1
+                                    grid.blocks[t].xdir = 0
+                                    grid.blocks[t].ydir = 1
+                                }
+                            }
+                        }
+                        if(keysPressed['z'] || menu.selector == 12){
+                            for(let t = 0;t<grid.blocks.length;t++){
+                                if(grid.blocks[t].glob.isPointInside(TIP_engine)){
+                                    grid.blocks[t].belt = 0
+                                    grid.blocks[t].xdir = 0
+                                    grid.blocks[t].ydir = 0
+                                }
+                            }
+                        }
+            
+                    }
                 }
             }
             if(wet == 0){
@@ -2626,7 +2739,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.length = .5
                     }
                 }
-                if(keysPressed['p']){
+                if(keysPressed['o']){
                     this.length+=.25
                 }
                 if(keysPressed['j']){
@@ -2924,8 +3037,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
                 for(let t = 0;t<this.mols.length;t++){
                     if(this.body.isPointInside(this.mols[t])){
-                    this.mols[t].x+=.11*this.xdir
-                    this.mols[t].y+=.11*this.ydir
+                    this.mols[t].x+=.145*this.xdir
+                    this.mols[t].y+=.145*this.ydir
                     this.mols[t].gripped = 1
                     // this.mols[t].last = grid.blocks.indexOf(this)
                     }
@@ -2992,8 +3105,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 }
                 for(let t = 0;t<this.compmols.length;t++){
                     if(this.body.isPointInside(this.compmols[t])){
-                    this.compmols[t].x+=.11*this.xdir
-                    this.compmols[t].y+=.11*this.ydir
+                    this.compmols[t].x+=.13*this.xdir
+                    this.compmols[t].y+=.13*this.ydir
                     this.compmols[t].gripped = 1
                     // this.compmols[t].last = grid.blocks.indexOf(this)
                     }
@@ -3105,7 +3218,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                 // if(Math.random()<.005){
                     this.spawntimer++
 
-                if(this.spawntimer == 125){
+                if(this.spawntimer == 62){
                     if(this.spigot == 1){
                     if(this.hydrogen<300){
                             // console.log(this.hydrogen)
@@ -3117,7 +3230,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                         this.spawntimer = 0
                     }
                 }
-                if(this.spawntimer == 155){
+                if(this.spawntimer == 78){
                     if(this.spigot == 2){
                         this.spawntimer = 0
                     if(this.nitrogen<250){
@@ -3129,7 +3242,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
                     }
                 }
 
-                if(this.spawntimer == 170){
+                if(this.spawntimer == 85){
                     if(this.spigot == 3){
                         this.spawntimer = 0
                     if(this.carbon<200){
@@ -3389,6 +3502,58 @@ window.addEventListener('DOMContentLoaded', (event) => {
         }
         grid.draw()
         candyman.draw()
+
+        if(keysPressed['r']){
+            menu.selector = 0
+        }
+
+        if(keysPressed['n']){
+            menu.selector = 1
+        }
+
+        if(keysPressed['v']){
+            menu.selector = 2
+        }
+
+        if(keysPressed['g']){
+            menu.selector = 3
+        }
+
+        if(keysPressed['b']){
+            menu.selector = 4
+        }
+
+        if(keysPressed['y']){
+            menu.selector = 5
+        }
+
+        if(keysPressed['t']){
+            menu.selector = 6
+        }
+
+        if(keysPressed['h']){
+            menu.selector = 7
+        }
+
+        if(keysPressed['x']){
+            menu.selector = 8
+        }
+
+        if(keysPressed['c']){
+            menu.selector = 9
+        }
+
+        if(keysPressed['e']){
+            menu.selector = 10
+        }
+
+        if(keysPressed['f']){
+            menu.selector = 11
+        }
+
+        if(keysPressed['z']){
+            menu.selector = 12
+        }
         menu.draw()
         if(drawcheck == 1){
             canvas_context.font = "5px arial"
