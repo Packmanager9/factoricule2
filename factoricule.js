@@ -1337,7 +1337,36 @@ window.addEventListener('DOMContentLoaded', (event) => {
             main()
         }, 33)
         document.addEventListener('keydown', (event) => {
-            keysPressed[event.key] = true;
+
+
+            if (event.key != "ArrowRight") {
+
+                if (event.key != "ArrowUp") {
+    
+                    if (event.key != "ArrowDown") {
+    
+                        if (event.key != "ArrowLeft") {
+                            keysPressed[event.key.toLocaleLowerCase()] = true;
+                        } else {
+    
+                            keysPressed[event.key] = true;
+                        }
+                    } else {
+    
+                        keysPressed[event.key] = true;
+                    }
+                } else {
+    
+                    keysPressed[event.key] = true;
+                }
+            } else {
+    
+                keysPressed[event.key] = true;
+            }
+            // keysPressed[event.key] = true;
+
+
+
             if(keysPressed['m'] || keysPressed[' ']){
                 if(menuon == 1){
                     menuon = 0
@@ -1347,7 +1376,37 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
         });
         document.addEventListener('keyup', (event) => {
+            
+        if (event.key != "ArrowRight") {
+
+            if (event.key != "ArrowUp") {
+
+                if (event.key != "ArrowDown") {
+
+                    if (event.key != "ArrowLeft") {
+                        if (event.key != "q") {
+
+                            delete keysPressed[event.key.toLocaleLowerCase()];
+                        } else {
+
+                            delete keysPressed[event.key];
+                        }
+                    } else {
+
+                        delete keysPressed[event.key];
+                    }
+                } else {
+
+                    delete keysPressed[event.key];
+                }
+            } else {
+
+                delete keysPressed[event.key];
+            }
+        } else {
+
             delete keysPressed[event.key];
+        }
         });
         window.addEventListener('pointerdown', e => {
             pointeron = 1
