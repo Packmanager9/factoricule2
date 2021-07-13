@@ -1812,9 +1812,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 
             tooltip()
-
-
-
             if(menu.selector == 1){
                 for(let t = 0;t<grid.blocks.length;t++){
                     if(grid.blocks[t].glob.isPointInside(TIP_engine)){
